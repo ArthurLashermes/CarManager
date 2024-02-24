@@ -1,11 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
-//using WebApplication1.Domain;
+using Server.Domain;
 
 namespace WebApplication1
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions options):
+
+		public DbSet<Brand> Brands { get; set; }
+		public DbSet<CarModel> CarModels { get; set; }
+		public DbSet<Vehicle> Vehicles { get; set; }
+		public DbSet<Maintenance> Maintenances { get; set; }
+
+		public ApplicationDbContext(DbContextOptions options):
         base(options)
         {
 
@@ -15,25 +21,23 @@ namespace WebApplication1
         {
             base.OnModelCreating(modelBuilder);
 
-            //modelBuilder.Entity<Recipe>()
-            //    .HasMany<Parameter>(x=>x.Parameters)
-            //    .WithOne()
-            //    .HasForeignKey(x=>x.RecipeId)
-            //    .OnDelete(DeleteBehavior.Cascade);
+			// Configure the Brand-CarModel relationship
+			modelBuilder.Entity<Brand>()
+				.HasMany(b => b.CarModels) // Brand has many CarModels
+				.WithOne(cm => cm.Brand) // CarModel has one Brand
+				.HasForeignKey(cm => cm.BrandId); // ForeignKey in CarModel pointing back to Brand
 
-            //modelBuilder.Entity<Recipe>()
-            //    .Property(x => x.RecipeName)
-            //    .HasColumnName("Name");
+			// Configure the CarModel-Vehicle relationship
+			modelBuilder.Entity<CarModel>()
+				.HasMany(cm => cm.Vehicles) // CarModel has many Vehicles
+				.WithOne(v => v.CarModel) // Vehicle has one CarModel
+				.HasForeignKey(v => v.CarModelId); // ForeignKey in Vehicle pointing back to CarModel
 
-            //modelBuilder.Entity<Parameter>()
-            //    .HasOne<Recipe>()
-            //    .WithMany(x => x.Parameters)
-            //    .HasForeignKey(x => x.RecipeId)
-            //    .OnDelete(DeleteBehavior.Cascade);
-                
-            //modelBuilder.Entity<Parameter>() .HasKey(x => x.ID);
-
-
-        }
+			// Configure the Vehicle-Maintenance relationship
+			modelBuilder.Entity<Vehicle>()
+				.HasMany(v => v.Maintenances) // Vehicle has many Maintenances
+				.WithOne(m => m.Vehicle) // Maintenance has one Vehicle
+				.HasForeignKey(m => m.VehicleId); // ForeignKey in Maintenance pointing back to Vehicle
+		}
     }
 }

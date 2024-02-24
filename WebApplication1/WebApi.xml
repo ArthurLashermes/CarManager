@@ -4,5 +4,24 @@
         <name>Server</name>
     </assembly>
     <members>
+        <member name="M:Server.Domain.Maintenance.CalculateMaintenanceDelay">
+            <summary>
+            Méthode pour calculer le retard d'entretien
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="T:Server.Migrations.CreateDatabase">
+            <inheritdoc />
+        </member>
+        <member name="M:Server.Migrations.CreateDatabase.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server.Migrations.CreateDatabase.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server.Migrations.CreateDatabase.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
     </members>
 </doc>
