@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Infrastructure.Data.SQLite\Migrations\**" />
+    <Content Remove="Infrastructure.Data.SQLite\Migrations\**" />
+    <EmbeddedResource Remove="Infrastructure.Data.SQLite\Migrations\**" />
+    <None Remove="Infrastructure.Data.SQLite\Migrations\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.1" />
@@ -26,11 +33,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Client\Client.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Domain\" />
-    <Folder Include="Infrastructure.Data.SQLite\Migrations\" />
   </ItemGroup>
 
 </Project>

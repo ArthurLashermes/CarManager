@@ -9,8 +9,8 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
 
-builder.Services.AddDbContext<DbContext, ApplicationDbContext>(
-    c=> c.UseSqlite("Data Source=C:\\Application.db;"));
+builder.Services.AddDbContext<ApplicationDbContext>(
+	options => options.UseSqlite("Data Source=Database.db;")); // Avec cette option, la BDD se retrouve dans le chemin bin/debug, on evite d'utiliser un chemin absolu
 // Add services to the container.
 
 builder.Services.AddControllers();
