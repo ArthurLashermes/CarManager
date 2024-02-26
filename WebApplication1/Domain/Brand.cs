@@ -6,6 +6,6 @@
 
 		public string Name { get; set; }
 
-		public virtual ICollection<CarModel> CarModels { get; set; }
+		public virtual ICollection<Car> Car { get; set; }
 	}
 }

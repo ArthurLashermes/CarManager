@@ -7,22 +7,22 @@ namespace Server.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class CarModelController : Controller
+	public class CarController : Controller
 	{
 		private readonly ApplicationDbContext _context;
-		private readonly ILogger <CarModelController> _logger;
+		private readonly ILogger <CarController> _logger;
 
-        public CarModelController(ApplicationDbContext context, ILogger<CarModelController> logger)
+        public CarController(ApplicationDbContext context, ILogger<CarController> logger)
         {
             _context = context;
 			_logger = logger;
         }
 
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<CarModel>>> GetCarModels() 
+		public async Task<ActionResult<IEnumerable<Car>>> GetCarModels() 
 		{
 			_logger.LogInformation("GetCarModels Method");
-			return await _context.CarModels.ToListAsync();
+			return await _context.Cars.ToListAsync();
 		}
     }
 }

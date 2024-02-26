@@ -5,7 +5,7 @@
 namespace Server.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateDatabase : Migration
+    public partial class DatabaseCreation : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,7 +24,7 @@ namespace Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CarModels",
+                name: "Cars",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -35,9 +35,9 @@ namespace Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CarModels", x => x.Id);
+                    table.PrimaryKey("PK_Cars", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CarModels_Brands_BrandId",
+                        name: "FK_Cars_Brands_BrandId",
                         column: x => x.BrandId,
                         principalTable: "Brands",
                         principalColumn: "Id",
@@ -54,15 +54,15 @@ namespace Server.Migrations
                     Year = table.Column<int>(type: "INTEGER", nullable: false),
                     Mileage = table.Column<int>(type: "INTEGER", nullable: false),
                     EnergyType = table.Column<string>(type: "TEXT", nullable: false),
-                    CarModelId = table.Column<int>(type: "INTEGER", nullable: false)
+                    CarId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Vehicles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Vehicles_CarModels_CarModelId",
-                        column: x => x.CarModelId,
-                        principalTable: "CarModels",
+                        name: "FK_Vehicles_Cars_CarId",
+                        column: x => x.CarId,
+                        principalTable: "Cars",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -89,8 +89,8 @@ namespace Server.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CarModels_BrandId",
-                table: "CarModels",
+                name: "IX_Cars_BrandId",
+                table: "Cars",
                 column: "BrandId");
 
             migrationBuilder.CreateIndex(
@@ -99,9 +99,9 @@ namespace Server.Migrations
                 column: "VehicleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vehicles_CarModelId",
+                name: "IX_Vehicles_CarId",
                 table: "Vehicles",
-                column: "CarModelId");
+                column: "CarId");
         }
 
         /// <inheritdoc />
@@ -114,7 +114,7 @@ namespace Server.Migrations
                 name: "Vehicles");
 
             migrationBuilder.DropTable(
-                name: "CarModels");
+                name: "Cars");
 
             migrationBuilder.DropTable(
                 name: "Brands");

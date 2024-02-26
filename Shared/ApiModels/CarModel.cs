@@ -1,6 +1,6 @@
 ﻿namespace Shared.ApiModels;
 
-public class Car
+public class CarModel
 {
     
 }

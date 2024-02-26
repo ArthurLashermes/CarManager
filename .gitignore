@@ -398,3 +398,5 @@ FodyWeavers.xsd
 *.sln.iml
 
 WebApplication1/Database.db
+WebApplication1/Database.db-shm
+WebApplication1/Database.db-wal

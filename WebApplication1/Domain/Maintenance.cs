@@ -37,10 +37,10 @@
 		/// <exception cref="InvalidOperationException"></exception>
 		public int CalculateMaintenanceDelay()
 		{
-			if (Vehicle == null || Vehicle.CarModel == null)
+			if (Vehicle == null || Vehicle.Car == null)
 				throw new InvalidOperationException("Les informations du véhicule ou du modèle de voiture sont manquantes.");
 
-			return MileageAtMaintenance + Vehicle.CarModel.MaintenanceFrequency - Vehicle.Mileage;
+			return MileageAtMaintenance + Vehicle.Car.MaintenanceFrequency - Vehicle.Mileage;
 		}
 	}
 }
