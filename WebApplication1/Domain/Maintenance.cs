@@ -12,7 +12,7 @@
 			get => _mileageAtMaintenance;
 			set
 			{
-				if (Vehicle != null && value != Vehicle?.Mileage)
+				if (Vehicle != null && value != Vehicle?.Mileage)//todo redo this and test for put and post
 					throw new ArgumentException("Lors de l’ajout de travaux, le kilométrage doit être le kilométrage courant du véhicule.");
 				_mileageAtMaintenance = value;
 			}
