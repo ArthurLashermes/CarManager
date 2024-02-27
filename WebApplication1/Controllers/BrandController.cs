@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Server.Domain;
 using WebApplication1;
+using Shared.ApiModels;
+
 
 namespace Server.Controllers
 {
@@ -39,41 +41,45 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Brand>> PostBrand(Brand brand)
+        public async Task<IActionResult> CreateBrand([FromBody] BrandModel BrandToCreate)
         {
-            _context.Brands.Add(brand);
-            await _context.SaveChangesAsync();
+            var newBrand = new Brand()
+            {
+                Name = BrandToCreate.Name,
+            };
 
-            return CreatedAtAction(nameof(GetBrand), new { id = brand.Id }, brand);
+            var BrandRepository = _context.Set<Brand>();
+
+            BrandRepository.Add(newBrand);
+
+            _context.SaveChanges();
+            return Ok();
+
         }
 
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBrand(int id, Brand brand)
+        public async Task<IActionResult> EditBrand([FromBody] BrandModel BrandToEdit, int id)
         {
-            if (id != brand.Id)
+            var BrandRepository = _context.Set<Brand>();
+
+            var dbBrand = BrandRepository
+                .FirstOrDefault(x => x.Id == id);
+
+            if (dbBrand == null)
             {
-                return BadRequest();
+                _logger.LogWarning($"No Brand found with Id: {id}");
+                return NotFound();
             }
 
-            _context.Entry(brand).State = EntityState.Modified;
+            dbBrand.Name = BrandToEdit.Name;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Brands.Any(e => e.Id == id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            BrandRepository.Update(dbBrand);
 
-            return NoContent();
+            _context.SaveChanges();
+            _logger.LogInformation($"The Brand with Id: {dbBrand.Id} and name: {dbBrand.Name} has been edited");
+            return Ok();
+
         }
 
         [HttpDelete("{id}")]
