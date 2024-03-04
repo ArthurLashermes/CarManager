@@ -29,8 +29,8 @@
 			}
 		}
 		public string EnergyType { get; set; }
-		public int CarModelId { get; set; }
-		public CarModel CarModel { get; set; }
+		public int CarId { get; set; }
+		public Car Car { get; set; }
 		public virtual ICollection<Maintenance> Maintenances { get; set; }
 	}
 }

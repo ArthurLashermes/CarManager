@@ -1,6 +1,6 @@
 ﻿namespace Server.Domain
 {
-	public class CarModel
+	public class Car
 	{
 		public int Id { get; set; }
 

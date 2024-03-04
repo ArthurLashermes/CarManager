@@ -31,7 +31,7 @@ namespace Server.Migrations
                     b.ToTable("Brands");
                 });
 
-            modelBuilder.Entity("Server.Domain.CarModel", b =>
+            modelBuilder.Entity("Server.Domain.Car", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -51,7 +51,7 @@ namespace Server.Migrations
 
                     b.HasIndex("BrandId");
 
-                    b.ToTable("CarModels");
+                    b.ToTable("Cars");
                 });
 
             modelBuilder.Entity("Server.Domain.Maintenance", b =>
@@ -83,7 +83,7 @@ namespace Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CarModelId")
+                    b.Property<int>("CarId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("EnergyType")
@@ -102,15 +102,15 @@ namespace Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CarModelId");
+                    b.HasIndex("CarId");
 
                     b.ToTable("Vehicles");
                 });
 
-            modelBuilder.Entity("Server.Domain.CarModel", b =>
+            modelBuilder.Entity("Server.Domain.Car", b =>
                 {
                     b.HasOne("Server.Domain.Brand", "Brand")
-                        .WithMany("CarModels")
+                        .WithMany("Car")
                         .HasForeignKey("BrandId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -131,21 +131,21 @@ namespace Server.Migrations
 
             modelBuilder.Entity("Server.Domain.Vehicle", b =>
                 {
-                    b.HasOne("Server.Domain.CarModel", "CarModel")
+                    b.HasOne("Server.Domain.Car", "Car")
                         .WithMany("Vehicles")
-                        .HasForeignKey("CarModelId")
+                        .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CarModel");
+                    b.Navigation("Car");
                 });
 
             modelBuilder.Entity("Server.Domain.Brand", b =>
                 {
-                    b.Navigation("CarModels");
+                    b.Navigation("Car");
                 });
 
-            modelBuilder.Entity("Server.Domain.CarModel", b =>
+            modelBuilder.Entity("Server.Domain.Car", b =>
                 {
                     b.Navigation("Vehicles");
                 });

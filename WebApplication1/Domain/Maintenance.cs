@@ -12,13 +12,13 @@
 			get => _mileageAtMaintenance;
 			set
 			{
-				if (value != Vehicle?.Mileage)
+				if (Vehicle != null && value != Vehicle?.Mileage)//todo redo this and test for put and post
 					throw new ArgumentException("Lors de l’ajout de travaux, le kilométrage doit être le kilométrage courant du véhicule.");
 				_mileageAtMaintenance = value;
 			}
 		}
 
-		public string _workDone;
+		private string _workDone;
 		public string WorkDone
 		{
 			get => _workDone;
@@ -37,10 +37,10 @@
 		/// <exception cref="InvalidOperationException"></exception>
 		public int CalculateMaintenanceDelay()
 		{
-			if (Vehicle == null || Vehicle.CarModel == null)
+			if (Vehicle == null || Vehicle.Car == null)
 				throw new InvalidOperationException("Les informations du véhicule ou du modèle de voiture sont manquantes.");
 
-			return MileageAtMaintenance + Vehicle.CarModel.MaintenanceFrequency - Vehicle.Mileage;
+			return MileageAtMaintenance + Vehicle.Car.MaintenanceFrequency - Vehicle.Mileage;
 		}
 	}
 }
