@@ -1,7 +1,7 @@
 ﻿namespace Server.Domain
 {
-	public class Maintenance
-	{
+	public class Maintenance : IDomain
+    {
 		public int Id { get; set; }
 		public int VehicleId { get; set; }
 		public Vehicle Vehicle { get; set; }

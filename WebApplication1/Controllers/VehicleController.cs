@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Domain;
-using Shared.ApiModels;
+using Server.Factory;
+using Shared.DeserializeModels;
+using Shared.SerializeModels;
 using WebApplication1;
 
 namespace Server.Controllers
@@ -12,20 +14,30 @@ namespace Server.Controllers
 	{
 		private readonly ApplicationDbContext _context;
 		private readonly ILogger<VehicleController> _logger;
+        private readonly VehicleFactory _factory;
 
-		public VehicleController(ApplicationDbContext context, ILogger<VehicleController> logger)
+        public VehicleController(ApplicationDbContext context, ILogger<VehicleController> logger,VehicleFactory vehicleFactory)
 		{
 			_context = context;
 			_logger = logger;
-		}
+            _factory = vehicleFactory;
+
+        }
 
 
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<Vehicle>>> GetVehicles()
+		public async Task<ActionResult<IEnumerable<VehicleModelDeserialize>>> GetVehicles()
 		{
 			_logger.LogInformation("GetVehicles Method");
 
-			return await _context.Vehicles.ToListAsync();
+            var vehicles = await _context.Vehicles
+                .Include(b => b.Car)
+                .Include(b => b.Maintenances)
+                .Select(x => _factory.DomainToDeserializeModel(x))
+                .Cast<VehicleModelDeserialize>()
+                .ToListAsync();
+
+            return Ok(vehicles);
 		}
 
 
@@ -47,7 +59,7 @@ namespace Server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditVehicle([FromBody] VehicleModel vehicleToEdit, int id)
+        public async Task<IActionResult> EditVehicle([FromBody] Shared.SerializeModels.VehicleModelSerialize vehicleToEdit, int id)
         {
             var vehicleRepository = _context.Set<Vehicle>();
 
@@ -75,7 +87,7 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateVehicle([FromBody] VehicleModel vehicleToCreate)
+        public async Task<IActionResult> CreateVehicle([FromBody] Shared.SerializeModels.VehicleModelSerialize vehicleToCreate)
         {
             var newVehicle = new Vehicle()
             {

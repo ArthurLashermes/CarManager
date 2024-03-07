@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using Server.Domain;
 using System.Reflection.Metadata;
-using Shared.ApiModels;
+using Shared.SerializeModels;
 using WebApplication1;
 
 namespace Server.Controllers
@@ -27,7 +27,9 @@ namespace Server.Controllers
             var carRepository = _context.Set<Car>();
 
             var car = carRepository
-                .FirstOrDefault(x => x.Id == id);
+                    .Include(car => car.Brand)
+                    .Include(car => car.Vehicles)
+                    .FirstOrDefault(x => x.Id == id);
 
             if (car == null)
             {
@@ -41,11 +43,11 @@ namespace Server.Controllers
 		public async Task<ActionResult<IEnumerable<Car>>> GetCars() 
 		{
 			_logger.LogInformation("GetCar Method");
-			return await _context.Cars.ToListAsync();
+            return await _context.Cars.Include(car => car.Brand).Include(car => car.Vehicles).ToListAsync();
 		}
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditCar([FromBody] CarModel CarToEdit, int id)
+        public async Task<IActionResult> EditCar([FromBody] Shared.SerializeModels.CarModelSerialize CarToEdit, int id)
         {
             var CarRepository = _context.Set<Car>();
 
@@ -71,7 +73,7 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCar([FromBody] CarModel CarToCreate)
+        public async Task<IActionResult> CreateCar([FromBody] Shared.SerializeModels.CarModelSerialize CarToCreate)
         {
             var newCar = new Car()
             {

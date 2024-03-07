@@ -1,7 +1,7 @@
 ﻿namespace Server.Domain
 {
-	public class Vehicle
-	{
+	public class Vehicle : IDomain
+    {
 		public int Id { get; set; }
 
 		private string _registrationNumber;

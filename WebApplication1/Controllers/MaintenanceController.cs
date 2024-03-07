@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Domain;
-using Shared.ApiModels;
+using Shared.SerializeModels;
 using WebApplication1;
 
 namespace Server.Controllers
@@ -43,7 +43,7 @@ namespace Server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditMaintenance([FromBody] MaintenanceModel MaintenanceToEdit, int id)
+        public async Task<IActionResult> EditMaintenance([FromBody] Shared.SerializeModels.MaintenanceModelSerialize MaintenanceToEdit, int id)
         {
             var MaintenanceRepository = _context.Set<Maintenance>();
 
@@ -68,7 +68,7 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateMaintenance([FromBody] MaintenanceModel MaintenanceToCreate)
+        public async Task<IActionResult> CreateMaintenance([FromBody] Shared.SerializeModels.MaintenanceModelSerialize MaintenanceToCreate)
         {
             var newMaintenance = new Maintenance()
             {

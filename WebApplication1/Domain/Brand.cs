@@ -1,7 +1,7 @@
 ﻿namespace Server.Domain
 {
-	public class Brand
-	{
+	public class Brand : IDomain
+    {
 		public int Id { get; set; }
 
 		public string Name { get; set; }

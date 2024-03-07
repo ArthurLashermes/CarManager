@@ -1,6 +1,6 @@
-﻿namespace Shared.ApiModels;
+﻿namespace Shared.SerializeModels;
 
-public class VehicleModel
+public class VehicleModelSerialize : ISerializeModelSerialize
 {
     public string RegistrationNumber { get; set; }
     public int Year { get; set; }
