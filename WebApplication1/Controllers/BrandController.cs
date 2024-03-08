@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Server.Domain;
 using Server.Factory;
 using Shared.DeserializeModels;
+using Shared.SerializeModels;
 using WebApplication1;
 
 
@@ -57,10 +58,7 @@ namespace Server.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBrand([FromBody] Shared.SerializeModels.BrandModelSerialize BrandToCreate)
         {
-            var newBrand = new Brand()
-            {
-                Name = BrandToCreate.Name,
-            };
+            var newBrand = (Brand)_factory.SerializeModelToDomain(BrandToCreate, new Brand());
 
             var BrandRepository = _context.Set<Brand>();
 
@@ -85,9 +83,8 @@ namespace Server.Controllers
                 return NotFound();
             }
 
-            dbBrand.Name = BrandToEdit.Name;
 
-            BrandRepository.Update(dbBrand);
+            BrandRepository.Update((Brand)_factory.SerializeModelToDomain(BrandToEdit,dbBrand));
 
             _context.SaveChanges();
             _logger.LogInformation($"The Brand with Id: {dbBrand.Id} and name: {dbBrand.Name} has been edited");

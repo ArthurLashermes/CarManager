@@ -8,6 +8,6 @@ namespace Server.Factory
     {
         public IDeserializeModel DomainToDeserializeModel(IDomain domain);
 
-        public IDomain SerializeModelToDomain(ISerializeModelSerialize domain);
+        public IDomain SerializeModelToDomain(ISerializeModelSerialize serializeModel, IDomain domain);
     }
 }

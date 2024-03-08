@@ -20,9 +20,12 @@ namespace Server.Factory
             return newBrand;
         }
 
-        public IDomain SerializeModelToDomain(ISerializeModelSerialize serializeModel)
+        public IDomain SerializeModelToDomain(ISerializeModelSerialize serializeModel, IDomain domain)
         {
-            return new Brand();
+            var brand = (Brand)domain;
+            var brandModelSerialize = (BrandModelSerialize)serializeModel;
+            brand.Name = brandModelSerialize.Name;
+            return brand;
         }
     }
 }

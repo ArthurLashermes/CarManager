@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Domain;
+using Server.Factory;
+using Shared.DeserializeModels;
 using Shared.SerializeModels;
 using WebApplication1;
 
@@ -11,23 +13,29 @@ namespace Server.Controllers
 	{
 		private readonly ApplicationDbContext _context;
 		private readonly ILogger<MaintenanceController> _logger;
+        private readonly MaintenanceFactory _factory;
 
-        public MaintenanceController(ApplicationDbContext context, ILogger<MaintenanceController> logger)
+
+        public MaintenanceController(ApplicationDbContext context, ILogger<MaintenanceController> logger, MaintenanceFactory maintenanceFactory)
         {
 			_context = context;
 			_logger = logger;
+            _factory = maintenanceFactory;
         }
 
 		[HttpGet]
-
-		public async Task<ActionResult<IEnumerable<Maintenance>>> GetMaintenance()
+		public async Task<ActionResult<IEnumerable<MaintenanceModelDeserialize>>> GetMaintenances()
 		{
-			_logger.LogInformation("GetMaintenance Method");
-			return await _context.Maintenances.ToListAsync();
-		}
+			_logger.LogInformation("GetMaintenances Method");
+            var maintenances = await _context.Maintenances
+                .Select(x => _factory.DomainToDeserializeModel(x))
+                .Cast<MaintenanceModelDeserialize>()
+                .ToListAsync();
+            return Ok(maintenances);
+        }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Maintenance>> GetMaintenance(int id)
+        public async Task<ActionResult<MaintenanceModelDeserialize>> GetMaintenance(int id)
         {
             var maintenanceRepository = _context.Set<Maintenance>();
 
@@ -39,11 +47,11 @@ namespace Server.Controllers
                 return NotFound();
             }
 
-            return maintenance;
+            return Ok(_factory.DomainToDeserializeModel(maintenance));
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditMaintenance([FromBody] Shared.SerializeModels.MaintenanceModelSerialize MaintenanceToEdit, int id)
+        public async Task<IActionResult> EditMaintenance([FromBody] MaintenanceModelSerialize MaintenanceToEdit, int id)
         {
             var MaintenanceRepository = _context.Set<Maintenance>();
 
@@ -56,9 +64,8 @@ namespace Server.Controllers
                 return NotFound();
             }
 
-            dbMaintenance. MileageAtMaintenance= MaintenanceToEdit.MileageAtMaintenance;
-            dbMaintenance.VehicleId = MaintenanceToEdit.VehicleId;
-            dbMaintenance.WorkDone = MaintenanceToEdit.WorkDone;
+            dbMaintenance = (Maintenance)_factory.SerializeModelToDomain(MaintenanceToEdit, dbMaintenance);
+            
 
             MaintenanceRepository.Update(dbMaintenance);
 
@@ -68,14 +75,9 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateMaintenance([FromBody] Shared.SerializeModels.MaintenanceModelSerialize MaintenanceToCreate)
+        public async Task<IActionResult> CreateMaintenance([FromBody] MaintenanceModelSerialize MaintenanceToCreate)
         {
-            var newMaintenance = new Maintenance()
-            {
-                MileageAtMaintenance = MaintenanceToCreate.MileageAtMaintenance,
-                VehicleId = MaintenanceToCreate.VehicleId,
-                WorkDone = MaintenanceToCreate.WorkDone,
-            };
+            var newMaintenance = (Maintenance)_factory.SerializeModelToDomain(MaintenanceToCreate, new Maintenance());
 
             var maintenanceRepository = _context.Set<Maintenance>();
 

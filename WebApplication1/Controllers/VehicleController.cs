@@ -21,7 +21,6 @@ namespace Server.Controllers
 			_context = context;
 			_logger = logger;
             _factory = vehicleFactory;
-
         }
 
 
@@ -33,21 +32,28 @@ namespace Server.Controllers
             var vehicles = await _context.Vehicles
                 .Include(b => b.Car)
                 .Include(b => b.Maintenances)
-                .Select(x => _factory.DomainToDeserializeModel(x))
-                .Cast<VehicleModelDeserialize>()
+                .Include(b => b.Car.Brand)
                 .ToListAsync();
 
-            return Ok(vehicles);
+            var deserializeVehicles = vehicles
+                .Select(x => _factory.DomainToDeserializeModel(x))
+                .Cast<VehicleModelDeserialize>()
+                .ToList();
+
+            return Ok(deserializeVehicles);
 		}
 
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Vehicle>> GetVehicle(int id)
+        public async Task<ActionResult<VehicleModelDeserialize>> GetVehicle(int id)
         {
             var vehicleRepository = _context.Set<Vehicle>();
 
             var vehicle = vehicleRepository
+                .Include(b => b.Car)
+                .Include(b => b.Maintenances)
+                .Include(b => b.Car.Brand)
                 .FirstOrDefault(x => x.Id == id);
 
             if (vehicle == null)
@@ -55,7 +61,7 @@ namespace Server.Controllers
                 return NotFound();
             }
 
-            return vehicle;
+            return (VehicleModelDeserialize)_factory.DomainToDeserializeModel(vehicle);
         }
 
         [HttpPut("{id}")]
@@ -72,12 +78,7 @@ namespace Server.Controllers
                 return NotFound();
             }
 
-            dbVehicle.CarId = vehicleToEdit.CarId;
-            dbVehicle.EnergyType = vehicleToEdit.EnergyType;
-            dbVehicle.Mileage = vehicleToEdit.Mileage;
-            dbVehicle.RegistrationNumber = vehicleToEdit.RegistrationNumber;
-            dbVehicle.Year = vehicleToEdit.Year;
-
+            dbVehicle = (Vehicle)_factory.SerializeModelToDomain(vehicleToEdit, dbVehicle);
 
             vehicleRepository.Update(dbVehicle);
 
@@ -87,16 +88,9 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateVehicle([FromBody] Shared.SerializeModels.VehicleModelSerialize vehicleToCreate)
+        public async Task<IActionResult> CreateVehicle([FromBody] VehicleModelSerialize vehicleToCreate)
         {
-            var newVehicle = new Vehicle()
-            {
-                CarId = vehicleToCreate.CarId,
-                EnergyType = vehicleToCreate.EnergyType,
-                Mileage = vehicleToCreate.Mileage,
-                RegistrationNumber = vehicleToCreate.RegistrationNumber,
-                Year = vehicleToCreate.Year,
-            };
+            var newVehicle = (Vehicle)_factory.SerializeModelToDomain(vehicleToCreate, new Vehicle());
 
             var vehicleRepository = _context.Set<Vehicle>();
 

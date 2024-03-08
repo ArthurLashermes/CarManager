@@ -7,7 +7,6 @@ namespace Shared.DeserializeModels
 		public int Id { get; set; }
 
 		public string Name { get; set; }
-        public int BrandId { get; set; }
 		public BrandModelDeserialize Brand { get; set; }
 		public int MaintenanceFrequency { get; set; }
 	}

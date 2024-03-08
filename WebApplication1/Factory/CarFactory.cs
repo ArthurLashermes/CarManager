@@ -27,9 +27,14 @@ namespace Server.Factory
             return newCar;
         }
 
-        public IDomain SerializeModelToDomain(ISerializeModelSerialize domain)
+        public IDomain SerializeModelToDomain(ISerializeModelSerialize serializeModel, IDomain domain)
         {
-            throw new NotImplementedException();
+            var brand = (Car)domain;
+            var brandModelSerialize = (CarModelSerialize)serializeModel;
+            brand.Name = brandModelSerialize.Name;
+            brand.BrandId = brandModelSerialize.BrandId;
+            brand.MaintenanceFrequency = brandModelSerialize.MaintenanceFrequency;
+            return brand;
         }
     }
 }

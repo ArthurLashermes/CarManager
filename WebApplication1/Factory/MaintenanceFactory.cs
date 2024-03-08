@@ -21,9 +21,14 @@ namespace Server.Factory
             return newMaintenance;
         }
 
-        public IDomain SerializeModelToDomain(ISerializeModelSerialize domain)
+        public IDomain SerializeModelToDomain(ISerializeModelSerialize serializeModel, IDomain domain)
         {
-            throw new NotImplementedException();
+            var maintenance = (Maintenance)domain;
+            var maintenanceModelSerialize = (MaintenanceModelSerialize)serializeModel;
+            maintenance.MileageAtMaintenance = maintenanceModelSerialize.MileageAtMaintenance;
+            maintenance.VehicleId = maintenanceModelSerialize.VehicleId;
+            maintenance.WorkDone = maintenanceModelSerialize.WorkDone;
+            return maintenance;
         }
     }
 }
