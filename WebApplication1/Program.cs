@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Server.Factory;
+using Server.Services;
 using System.Text.Json.Serialization;
 using WebApplication1;
 using Path = System.IO.Path;
@@ -28,7 +29,9 @@ builder.Services.AddSwaggerGen(c=>
 builder.Services.AddScoped<BrandFactory>();
 builder.Services.AddScoped<CarFactory>();
 builder.Services.AddScoped<VehicleFactory>();
-builder.Services.AddScoped<MaintenanceFactory>();
+builder.Services.AddScoped<MaintenanceFactory>(); 
+
+builder.Services.AddScoped<MaintenanceService>();
 
 var app = builder.Build();
 

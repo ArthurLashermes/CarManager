@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Server.Domain;
 using Server.Factory;
+using Server.Services;
 using Shared.DeserializeModels;
 using Shared.SerializeModels;
 using WebApplication1;
@@ -14,13 +15,15 @@ namespace Server.Controllers
 		private readonly ApplicationDbContext _context;
 		private readonly ILogger<MaintenanceController> _logger;
         private readonly MaintenanceFactory _factory;
+        private readonly MaintenanceService _maintenanceService;
 
 
-        public MaintenanceController(ApplicationDbContext context, ILogger<MaintenanceController> logger, MaintenanceFactory maintenanceFactory)
+        public MaintenanceController(ApplicationDbContext context, ILogger<MaintenanceController> logger, MaintenanceFactory maintenanceFactory, MaintenanceService maintenanceService)
         {
 			_context = context;
 			_logger = logger;
             _factory = maintenanceFactory;
+            _maintenanceService = maintenanceService;
         }
 
 		[HttpGet]
@@ -65,7 +68,6 @@ namespace Server.Controllers
             }
 
             dbMaintenance = (Maintenance)_factory.SerializeModelToDomain(MaintenanceToEdit, dbMaintenance);
-            
 
             MaintenanceRepository.Update(dbMaintenance);
 
@@ -78,6 +80,8 @@ namespace Server.Controllers
         public async Task<IActionResult> CreateMaintenance([FromBody] MaintenanceModelSerialize MaintenanceToCreate)
         {
             var newMaintenance = (Maintenance)_factory.SerializeModelToDomain(MaintenanceToCreate, new Maintenance());
+
+            _maintenanceService.ValidateMileageAtMaintenance(newMaintenance);
 
             var maintenanceRepository = _context.Set<Maintenance>();
 

@@ -4,13 +4,6 @@
         <name>Server</name>
     </assembly>
     <members>
-        <member name="M:Server.Domain.Maintenance.CalculateMaintenanceDelay">
-            <summary>
-            Méthode pour calculer le retard d'entretien
-            </summary>
-            <returns></returns>
-            <exception cref="T:System.InvalidOperationException"></exception>
-        </member>
         <member name="T:Server.Migrations.DatabaseCreation">
             <inheritdoc />
         </member>
@@ -22,6 +15,13 @@
         </member>
         <member name="M:Server.Migrations.DatabaseCreation.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
+        </member>
+        <member name="M:Server.Services.MaintenanceService.CalculateMaintenanceDelay(Server.Domain.Maintenance)">
+            <summary>
+            Méthode pour calculer le retard d'entretien
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.InvalidOperationException"></exception>
         </member>
     </members>
 </doc>
