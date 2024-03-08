@@ -106,5 +106,25 @@ namespace Server.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("/MaintenanceDelay/{id}")]
+        public async Task<ActionResult<int>> GetMaintenanceDelay(int id)
+        {
+            var maintenanceRepository = _context.Set<Maintenance>();
+
+            var maintenance = maintenanceRepository
+                .Include(x => x.Vehicle)
+                .Include(x => x.Vehicle.Car)
+                .FirstOrDefault(x => x.Id == id);
+            
+            var maintenanceDelay = _maintenanceService.CalculateMaintenanceDelay(maintenance);
+
+            if (maintenance == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(maintenanceDelay);
+        }
     }
 }
