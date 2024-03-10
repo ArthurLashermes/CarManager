@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Server.Factory;
+using Server.Services;
+using System.Text.Json.Serialization;
 using WebApplication1;
 using Path = System.IO.Path;
 
@@ -14,6 +17,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c=>
@@ -22,7 +26,12 @@ builder.Services.AddSwaggerGen(c=>
     c.IncludeXmlComments(filePath);
 });
 
+builder.Services.AddScoped<BrandFactory>();
+builder.Services.AddScoped<CarFactory>();
+builder.Services.AddScoped<VehicleFactory>();
+builder.Services.AddScoped<MaintenanceFactory>(); 
 
+builder.Services.AddScoped<MaintenanceService>();
 
 var app = builder.Build();
 
@@ -36,6 +45,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
+
+
 
 
 app.UseHttpsRedirection();

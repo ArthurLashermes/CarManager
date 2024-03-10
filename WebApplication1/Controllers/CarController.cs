@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using Server.Domain;
 using System.Reflection.Metadata;
-using Shared.ApiModels;
+using Server.Factory;
+using Shared.DeserializeModels;
+using Shared.SerializeModels;
 using WebApplication1;
 
 namespace Server.Controllers
@@ -14,38 +16,51 @@ namespace Server.Controllers
 	{
 		private readonly ApplicationDbContext _context;
 		private readonly ILogger <CarController> _logger;
+        private readonly CarFactory _factory;
 
-        public CarController(ApplicationDbContext context, ILogger<CarController> logger)
+        public CarController(ApplicationDbContext context, ILogger<CarController> logger, CarFactory factory)
         {
             _context = context;
 			_logger = logger;
+            _factory = factory;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Car>> GetCar(int id)
+        public async Task<ActionResult<CarModelDeserialize>> GetCar(int id)
         {
             var carRepository = _context.Set<Car>();
 
             var car = carRepository
-                .FirstOrDefault(x => x.Id == id);
+                    .Include(car => car.Brand)
+                    .FirstOrDefault(x => x.Id == id);
 
             if (car == null)
             {
                 return NotFound();
             }
+            
 
-            return car;
+            return (CarModelDeserialize)_factory.DomainToDeserializeModel(car);
         }
 
         [HttpGet]
-		public async Task<ActionResult<IEnumerable<Car>>> GetCars() 
+		public async Task<ActionResult<IEnumerable<CarModelDeserialize>>> GetCars() 
 		{
 			_logger.LogInformation("GetCar Method");
-			return await _context.Cars.ToListAsync();
+            var cars = await _context.Cars
+                .Include(b => b.Brand)
+                .ToListAsync();
+
+            var deserializeCars = cars
+                .Select(x => _factory.DomainToDeserializeModel(x))
+                .Cast<CarModelDeserialize>()
+                .ToList();
+
+            return Ok(deserializeCars);
 		}
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditCar([FromBody] CarModel CarToEdit, int id)
+        public async Task<IActionResult> EditCar([FromBody] CarModelSerialize CarToEdit, int id)
         {
             var CarRepository = _context.Set<Car>();
 
@@ -57,12 +72,8 @@ namespace Server.Controllers
                 _logger.LogWarning($"No Car found with Id: {id}");
                 return NotFound();
             }
-
-            dbCar.Name = CarToEdit.Name;
-            dbCar.BrandId = CarToEdit.BrandId;
-            dbCar.MaintenanceFrequency = CarToEdit.MaintenanceFrequency;
-
-            CarRepository.Update(dbCar);
+            
+            CarRepository.Update((Car)_factory.SerializeModelToDomain(CarToEdit,dbCar));
 
             _context.SaveChanges();
             _logger.LogInformation($"The Car with Id: {dbCar.Id} and name: {dbCar.Name} has been edited");
@@ -71,18 +82,11 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCar([FromBody] CarModel CarToCreate)
+        public async Task<IActionResult> CreateCar([FromBody] CarModelSerialize CarToCreate)
         {
-            var newCar = new Car()
-            {
-                Name = CarToCreate.Name,
-                BrandId = CarToCreate.BrandId,
-                MaintenanceFrequency = CarToCreate.MaintenanceFrequency,
-            };
-
             var carRepository = _context.Set<Car>();
 
-            carRepository.Add(newCar);
+            carRepository.Add((Car)_factory.SerializeModelToDomain(CarToCreate, new Car()));
 
             _context.SaveChanges();
             return Ok();

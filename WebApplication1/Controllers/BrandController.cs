@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Domain;
+using Server.Factory;
+using Shared.DeserializeModels;
+using Shared.SerializeModels;
 using WebApplication1;
-using Shared.ApiModels;
 
 
 namespace Server.Controllers
@@ -13,40 +15,50 @@ namespace Server.Controllers
 	{
 		private readonly ApplicationDbContext _context;
 		private readonly ILogger<BrandController> _logger;
+        private readonly BrandFactory _factory;
 
-		public BrandController(ApplicationDbContext context, ILogger<BrandController> logger)
+
+        public BrandController(ApplicationDbContext context, ILogger<BrandController> logger, BrandFactory factory)
 		{
 			_context = context;
 			_logger = logger;
-		}
+            _factory = factory;
+
+        }
 
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<Brand>>> GetBrands()
+		public async Task<ActionResult<IEnumerable<BrandModelDeserialize>>> GetBrands()
 		{
 			_logger.LogInformation("GetBrand Method");
-			return await _context.Brands.ToListAsync();
-		}
+
+            var brands = await _context.Brands
+                .Include(b => b.Car)
+                .Select(x => _factory.DomainToDeserializeModel(x))
+                .Cast<BrandModelDeserialize>()
+                .ToListAsync();
+
+            return Ok(brands);
+        }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Brand>> GetBrand(int id)
+        public async Task<ActionResult<Shared.DeserializeModels.BrandModelDeserialize>> GetBrand(int id)
         {
-            var brand = await _context.Brands.FindAsync(id);
+            var brand = _context.Brands
+                .Include(b => b.Car)
+                .FirstOrDefault(x => x.Id == id);
 
             if (brand == null)
             {
                 return NotFound();
             }
 
-            return brand;
+            return (Shared.DeserializeModels.BrandModelDeserialize) _factory.DomainToDeserializeModel(brand);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateBrand([FromBody] BrandModel BrandToCreate)
+        public async Task<IActionResult> CreateBrand([FromBody] Shared.SerializeModels.BrandModelSerialize BrandToCreate)
         {
-            var newBrand = new Brand()
-            {
-                Name = BrandToCreate.Name,
-            };
+            var newBrand = (Brand)_factory.SerializeModelToDomain(BrandToCreate, new Brand());
 
             var BrandRepository = _context.Set<Brand>();
 
@@ -54,12 +66,11 @@ namespace Server.Controllers
 
             _context.SaveChanges();
             return Ok();
-
         }
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditBrand([FromBody] BrandModel BrandToEdit, int id)
+        public async Task<IActionResult> EditBrand([FromBody] Shared.SerializeModels.BrandModelSerialize BrandToEdit, int id)
         {
             var BrandRepository = _context.Set<Brand>();
 
@@ -72,9 +83,8 @@ namespace Server.Controllers
                 return NotFound();
             }
 
-            dbBrand.Name = BrandToEdit.Name;
 
-            BrandRepository.Update(dbBrand);
+            BrandRepository.Update((Brand)_factory.SerializeModelToDomain(BrandToEdit,dbBrand));
 
             _context.SaveChanges();
             _logger.LogInformation($"The Brand with Id: {dbBrand.Id} and name: {dbBrand.Name} has been edited");

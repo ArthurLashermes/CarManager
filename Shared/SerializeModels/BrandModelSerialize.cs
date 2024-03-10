@@ -5,9 +5,9 @@ using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shared.ApiModels
+namespace Shared.SerializeModels
 {
-    public class BrandModel
+    public class BrandModelSerialize : ISerializeModelSerialize
     {
         public string Name { get; set; }
     }

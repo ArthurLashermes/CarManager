@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Domain;
-using Shared.ApiModels;
+using Server.Factory;
+using Server.Services;
+using Shared.DeserializeModels;
+using Shared.SerializeModels;
 using WebApplication1;
 
 namespace Server.Controllers
@@ -11,23 +14,31 @@ namespace Server.Controllers
 	{
 		private readonly ApplicationDbContext _context;
 		private readonly ILogger<MaintenanceController> _logger;
+        private readonly MaintenanceFactory _factory;
+        private readonly MaintenanceService _maintenanceService;
 
-        public MaintenanceController(ApplicationDbContext context, ILogger<MaintenanceController> logger)
+
+        public MaintenanceController(ApplicationDbContext context, ILogger<MaintenanceController> logger, MaintenanceFactory maintenanceFactory, MaintenanceService maintenanceService)
         {
 			_context = context;
 			_logger = logger;
+            _factory = maintenanceFactory;
+            _maintenanceService = maintenanceService;
         }
 
 		[HttpGet]
-
-		public async Task<ActionResult<IEnumerable<Maintenance>>> GetMaintenance()
+		public async Task<ActionResult<IEnumerable<MaintenanceModelDeserialize>>> GetMaintenances()
 		{
-			_logger.LogInformation("GetMaintenance Method");
-			return await _context.Maintenances.ToListAsync();
-		}
+			_logger.LogInformation("GetMaintenances Method");
+            var maintenances = await _context.Maintenances
+                .Select(x => _factory.DomainToDeserializeModel(x))
+                .Cast<MaintenanceModelDeserialize>()
+                .ToListAsync();
+            return Ok(maintenances);
+        }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Maintenance>> GetMaintenance(int id)
+        public async Task<ActionResult<MaintenanceModelDeserialize>> GetMaintenance(int id)
         {
             var maintenanceRepository = _context.Set<Maintenance>();
 
@@ -39,11 +50,11 @@ namespace Server.Controllers
                 return NotFound();
             }
 
-            return maintenance;
+            return Ok(_factory.DomainToDeserializeModel(maintenance));
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditMaintenance([FromBody] MaintenanceModel MaintenanceToEdit, int id)
+        public async Task<IActionResult> EditMaintenance([FromBody] MaintenanceModelSerialize MaintenanceToEdit, int id)
         {
             var MaintenanceRepository = _context.Set<Maintenance>();
 
@@ -56,9 +67,7 @@ namespace Server.Controllers
                 return NotFound();
             }
 
-            dbMaintenance. MileageAtMaintenance= MaintenanceToEdit.MileageAtMaintenance;
-            dbMaintenance.VehicleId = MaintenanceToEdit.VehicleId;
-            dbMaintenance.WorkDone = MaintenanceToEdit.WorkDone;
+            dbMaintenance = (Maintenance)_factory.SerializeModelToDomain(MaintenanceToEdit, dbMaintenance);
 
             MaintenanceRepository.Update(dbMaintenance);
 
@@ -68,14 +77,11 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateMaintenance([FromBody] MaintenanceModel MaintenanceToCreate)
+        public async Task<IActionResult> CreateMaintenance([FromBody] MaintenanceModelSerialize MaintenanceToCreate)
         {
-            var newMaintenance = new Maintenance()
-            {
-                MileageAtMaintenance = MaintenanceToCreate.MileageAtMaintenance,
-                VehicleId = MaintenanceToCreate.VehicleId,
-                WorkDone = MaintenanceToCreate.WorkDone,
-            };
+            var newMaintenance = (Maintenance)_factory.SerializeModelToDomain(MaintenanceToCreate, new Maintenance());
+
+            _maintenanceService.ValidateMileageAtMaintenance(newMaintenance);
 
             var maintenanceRepository = _context.Set<Maintenance>();
 
@@ -99,6 +105,26 @@ namespace Server.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpGet("/MaintenanceDelay/{id}")]
+        public async Task<ActionResult<int>> GetMaintenanceDelay(int id)
+        {
+            var maintenanceRepository = _context.Set<Maintenance>();
+
+            var maintenance = maintenanceRepository
+                .Include(x => x.Vehicle)
+                .Include(x => x.Vehicle.Car)
+                .FirstOrDefault(x => x.Id == id);
+            
+            var maintenanceDelay = _maintenanceService.CalculateMaintenanceDelay(maintenance);
+
+            if (maintenance == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(maintenanceDelay);
         }
     }
 }

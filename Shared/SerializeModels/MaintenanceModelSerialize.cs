@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shared.ApiModels
+namespace Shared.SerializeModels
 {
-    public class MaintenanceModel
+    public class MaintenanceModelSerialize : ISerializeModelSerialize
     {
         public int VehicleId { get; set; }
 
