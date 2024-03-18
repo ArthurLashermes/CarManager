@@ -1,5 +1,6 @@
 ﻿@page "/vehicle/add"
 @using Shared.DeserializeModels
+@using Shared.SerializeModels
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 
@@ -75,12 +76,12 @@
     private List<CarModelDeserialize> cars = new List<CarModelDeserialize>();
 
 
-    private VehicleModelDeserialize vehicle = new VehicleModelDeserialize()
+    private VehicleModelSerialize vehicle = new VehicleModelSerialize()
     {
-        Car = new CarModelDeserialize
-        {
-                Brand = new BrandModelDeserialize()
-        }
+        // Car = new CarModelDeserialize
+        // {
+        //         Brand = new BrandModelDeserialize()
+        // }
     };
 
     protected override async Task OnInitializedAsync()
@@ -96,8 +97,7 @@
 
     private async Task HandleValidSubmit()
     {
-        vehicle.Car.Id = selectedCarId;
-        vehicle.Car.Brand.Id = SelectedBrandId;
+        vehicle.CarId = selectedCarId;
 
         var response = await HttpClient.PostAsJsonAsync("api/Vehicle", vehicle);
         if (response.IsSuccessStatusCode)
