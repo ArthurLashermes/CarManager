@@ -109,5 +109,33 @@ namespace Server.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Retourne les Cars selon un BrandId
+        /// </summary>
+        /// <param name="brandId"></param>
+        /// <returns></returns>
+        [HttpGet("bybrand/{brandId}")]
+        public async Task<ActionResult<IEnumerable<CarModelDeserialize>>> GetCarsByBrand(int brandId)
+        {
+            _logger.LogInformation($"Recherche des voitures de la marque Id: {brandId}");
+            var carsByBrand = await _context.Cars
+                .Where(c => c.BrandId == brandId)
+                .Include(c => c.Brand)
+                .ToListAsync();
+
+            if(carsByBrand == null || !carsByBrand.Any())
+            {
+                return NotFound($"Aucune voiture trouvée pour la marque Id: {brandId}");
+            }
+
+            var deserializeCars = carsByBrand
+                .Select(car => _factory.DomainToDeserializeModel(car))
+                .Cast<CarModelDeserialize>()
+                .ToList();
+
+            return Ok(deserializeCars);
+
+        }
+
     }
 }

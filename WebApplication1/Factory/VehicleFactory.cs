@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Server.Domain;
+﻿using Server.Domain;
+using Server.Services;
 using Shared.DeserializeModels;
 using Shared.SerializeModels;
-using WebApplication1;
 
 namespace Server.Factory
 {
@@ -10,16 +9,21 @@ namespace Server.Factory
     {
         private readonly CarFactory _carFactory;
         private readonly MaintenanceFactory _maintenanceFactory;
+        private readonly MaintenanceService _maintenanceService;
 
 
-        public VehicleFactory(CarFactory carFactory, MaintenanceFactory maintenanceFactory)
+        public VehicleFactory(CarFactory carFactory, MaintenanceFactory maintenanceFactory, MaintenanceService maintenanceService)
         {
             _carFactory = carFactory;
             _maintenanceFactory = maintenanceFactory;
+            _maintenanceService = maintenanceService;
         }
         public IDeserializeModel DomainToDeserializeModel(IDomain domain)
         {
             var vehicle = (Vehicle)domain;
+
+            var lastMaintenance = _maintenanceService.GetLastMaintenance(vehicle);
+
             var newVehicle = new VehicleModelDeserialize()
             {
                 Id = vehicle.Id,
@@ -32,6 +36,8 @@ namespace Server.Factory
                     .Select(x => _maintenanceFactory.DomainToDeserializeModel(x))
                     .Cast<MaintenanceModelDeserialize>()
                     .ToList(),
+				MaintenanceDelay = lastMaintenance
+
             };
             return newVehicle;
         }

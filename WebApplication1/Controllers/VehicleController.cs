@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Client.Pages;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Domain;
 using Server.Factory;
+using Server.Services;
 using Shared.DeserializeModels;
 using Shared.SerializeModels;
 using WebApplication1;
@@ -15,14 +17,15 @@ namespace Server.Controllers
 		private readonly ApplicationDbContext _context;
 		private readonly ILogger<VehicleController> _logger;
         private readonly VehicleFactory _factory;
+        private readonly VehicleService _service;
 
-        public VehicleController(ApplicationDbContext context, ILogger<VehicleController> logger,VehicleFactory vehicleFactory)
+        public VehicleController(ApplicationDbContext context, ILogger<VehicleController> logger,VehicleFactory vehicleFactory, VehicleService vehicleService)
 		{
 			_context = context;
 			_logger = logger;
             _factory = vehicleFactory;
+            _service = vehicleService;
         }
-
 
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<VehicleModelDeserialize>>> GetVehicles()
@@ -42,8 +45,6 @@ namespace Server.Controllers
 
             return Ok(deserializeVehicles);
 		}
-
-
 
         [HttpGet("{id}")]
         public async Task<ActionResult<VehicleModelDeserialize>> GetVehicle(int id)
@@ -65,7 +66,7 @@ namespace Server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditVehicle([FromBody] Shared.SerializeModels.VehicleModelSerialize vehicleToEdit, int id)
+        public async Task<IActionResult> EditVehicle([FromBody] VehicleModelSerialize vehicleToEdit, int id)
         {
             var vehicleRepository = _context.Set<Vehicle>();
 
@@ -90,6 +91,11 @@ namespace Server.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateVehicle([FromBody] VehicleModelSerialize vehicleToCreate)
         {
+            _logger.LogInformation($"PASSAGE METHODE ADD VEHICLE");
+
+            _logger.LogInformation($"Ajout du vehicule :{vehicleToCreate}");
+
+
             var newVehicle = (Vehicle)_factory.SerializeModelToDomain(vehicleToCreate, new Vehicle());
 
             var vehicleRepository = _context.Set<Vehicle>();

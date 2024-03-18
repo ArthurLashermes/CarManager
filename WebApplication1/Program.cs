@@ -32,6 +32,7 @@ builder.Services.AddScoped<VehicleFactory>();
 builder.Services.AddScoped<MaintenanceFactory>(); 
 
 builder.Services.AddScoped<MaintenanceService>();
+builder.Services.AddScoped<VehicleService>();
 
 var app = builder.Build();
 

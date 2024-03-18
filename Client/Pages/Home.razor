@@ -1,7 +1,61 @@
 ﻿@page "/"
+@using Shared.DeserializeModels
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
 
-<PageTitle>Home</PageTitle>
+<h3>Véhicules en retard d'entretien</h3>
 
-<h1>Hello, world!</h1>
+@if (vehiclesInDelay == null)
+{
+	<p><em>Chargement...</em></p>
+}
+else if (vehiclesInDelay.Count == 0)
+{
+	<p>Aucun véhicule en retard d'entretien.</p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Marque</th>
+				<th>Modèle</th>
+				<th>Immatriculation</th>
+				<th>Retard (jours)</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var vehicle in vehiclesInDelay)
+			{
+				<tr @ondblclick="() => NavigateToVehicleDetail(vehicle.Id)">
+					<td>@vehicle.Car.Brand.Name</td>
+					<td>@vehicle.Car.Name</td>
+					<td>@vehicle.RegistrationNumber</td>
+					<td>@vehicle.MaintenanceDelay</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
 
-Welcome to your new app.
+@code {
+
+	private List<VehicleModelDeserialize> vehiclesInDelay = new List<VehicleModelDeserialize>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			vehiclesInDelay = await HttpClient.GetFromJsonAsync<List<VehicleModelDeserialize>>("api/Vehicle");
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Une erreur est survenue: {ex.Message}");
+		}
+	}
+
+	private void NavigateToVehicleDetail(int vehicleId)
+	{
+		NavigationManager.NavigateTo($"/VehicleDetail/{vehicleId}");
+	}
+}
