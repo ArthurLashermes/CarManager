@@ -1,0 +1,67 @@
+﻿@page "/cars"
+@using Shared.DeserializeModels
+@inject HttpClient HttpClient
+
+<h3> Car Models </h3>
+
+@if (cars.Count == 0)
+{
+    <p> Aucun modèle à afficher</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Marque</th>
+                <th>Modèle</th>
+                <th>Fréquence</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var car in cars)
+            {
+                <tr>
+                    <td>@car.Brand.Name</td>
+                    <td>@car.Name</td>
+                    <td>@car.MaintenanceFrequency</td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="() => DeleteCar(car.Id)">❌</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+	private List<CarModelDeserialize> cars = new List<CarModelDeserialize>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            cars = await HttpClient.GetFromJsonAsync<List<CarModelDeserialize>>("api/Car");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Erreur lors du chargement des véhicules.");
+        }
+    }
+
+    private async Task DeleteCar(int carId)
+    {
+        var response = await HttpClient.DeleteAsync($"api/Car/{carId}");
+        if (response.IsSuccessStatusCode)
+        {
+            cars.RemoveAll(v => v.Id == carId);
+            StateHasChanged(); // Raffraichit le composant pour refléter la suppression
+        }
+        else
+        {
+            Console.WriteLine("Erreur lors de la suppression du model.");
+        }
+    }
+
+}

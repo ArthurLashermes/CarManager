@@ -1,0 +1,15 @@
+- Ajout véhicule avec formulaire propre (vérification front pas de texte vide, plaque d'immatriculation format correct)
+
+- Vérifier suppression fonctionne
+
+- Créer des données cohérentes (Retard maintenance surtout)
+
+- Traduction
+
+- Page véhicule détaillé
+
+- Stylisé toute les pages
+
+- Corriger tout les warnings
+
+- Compléter les TUS (si pas tous fait)

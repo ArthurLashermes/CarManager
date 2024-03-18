@@ -1,0 +1,88 @@
+﻿@page "/vehicles"
+@using Shared.DeserializeModels
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<div class="vehicles-header">
+    <h3>Véhicules</h3>
+    <button class="btn btn-primary add-vehicle-btn" @onclick="NavigateToAddVehiclePage">+</button>
+</div>
+
+@if (vehicles.Count == 0)
+{
+	<p> Aucun véhicule à afficher</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Marque</th>
+                <th>Modèle</th>
+                <th>Immatriculation</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var vehicle in vehicles)
+            {
+                <tr>
+                    <td>@vehicle.Car.Brand.Name</td>
+                    <td>@vehicle.Car.Name</td>
+                    <td>@vehicle.RegistrationNumber</td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="() => DeleteVehicle(vehicle.Id)">❌</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code{
+
+    private List<VehicleModelDeserialize> vehicles = new List<VehicleModelDeserialize>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+           vehicles = await HttpClient.GetFromJsonAsync<List<VehicleModelDeserialize>>("api/Vehicle");
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine("Erreur lors du chargement des véhicules.");
+        }
+    }
+
+    private async Task DeleteVehicle(int vehicleId)
+    {
+        var response = await HttpClient.DeleteAsync($"api/Vehicle/{vehicleId}");
+        if (response.IsSuccessStatusCode)
+        {
+            vehicles.RemoveAll(v => v.Id == vehicleId);
+            StateHasChanged(); // Raffraichit le composant pour refléter la suppression
+        }
+        else
+        {
+            Console.WriteLine("Erreur lors de la suppression du véhicule.");
+        }
+    }
+
+    private void NavigateToAddVehiclePage()
+    {
+        NavigationManager.NavigateTo("/vehicle/add");
+    }
+}
+
+<style>
+    .vehicles-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .add-vehicle-btn {
+        font-size: 24px;
+    }
+</style>

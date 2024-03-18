@@ -1,0 +1,79 @@
+﻿@page "/VehicleDetail/{VehicleId:int}"
+@using Shared.DeserializeModels
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<div class="vehicle-details-container">
+    <div class="vehicle-title">
+        <h3>Véhicule @vehicle?.RegistrationNumber</h3>
+    </div>
+    <div class="maintenances-title">
+        <h3>Entretiens</h3>
+    </div>
+    <div class="vehicle-info">
+        <textarea>@vehicleInfo</textarea>
+    </div>
+    <div class="maintenances-info">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Km</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var maintenance in vehicle?.Maintenances ?? new List<MaintenanceModelDeserialize>())
+                {
+                    <tr>
+                        <td>@maintenance.MileageAtMaintenance</td>
+                        <td>@maintenance.WorkDone</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int VehicleId { get; set; }
+
+    private VehicleModelDeserialize vehicle;
+    private string vehicleInfo;
+
+    protected override async Task OnInitializedAsync()
+    {
+        vehicle = await HttpClient.GetFromJsonAsync<VehicleModelDeserialize>($"api/Vehicle/{VehicleId}");
+        vehicleInfo = $"Marque: {vehicle?.Car.Brand.Name}\nModèle: {vehicle?.Car.Name}\nImmatriculation: {vehicle?.RegistrationNumber}\nEnergie: {vehicle?.EnergyType}";
+    }
+}
+
+<style>
+    .vehicle-details-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .vehicle-title, .maintenances-title {
+        text-align: left;
+    }
+
+    .maintenances-title {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .vehicle-info {
+        margin-top: 10px;
+    }
+
+    textarea {
+        width: 100%;
+        height: 100px;
+        margin-bottom: 20px;
+    }
+
+    .maintenances-info {
+        margin-top: 20px;
+    }
+</style>

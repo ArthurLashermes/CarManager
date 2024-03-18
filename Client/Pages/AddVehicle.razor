@@ -1,0 +1,112 @@
+﻿@page "/vehicle/add"
+@using Shared.DeserializeModels
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<h3>Ajouter un Véhicule</h3>
+
+<EditForm Model="@vehicle" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="brandId">Marque:</label>
+        <InputSelect id="brandId" class="form-control" @bind-Value="SelectedBrandId">
+            <option value="">Sélectionnez une marque</option>
+            @foreach (var brand in brands)
+            {
+                <option value="@brand.Id">@brand.Name</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="form-group">
+        <label for="carId">Modèle:</label>
+        <InputSelect id="carId" class="form-control" @bind-Value="selectedCarId">
+            <option value="">Sélectionnez un modèle</option>
+            @foreach (var car in cars)
+            {
+                <option value="@car.Id">@car.Name</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="form-group">
+        <label for="registrationNumber">Immatriculation:</label>
+        <InputText id="registrationNumber" class="form-control" @bind-Value="vehicle.RegistrationNumber" />
+    </div>
+
+    <div class="form-group">
+        <label for="EnergyType">Énergie:</label>
+        <InputText id="energyType" class="form-control" @bind-Value="vehicle.EnergyType" />
+    </div>
+
+    <div class="form-group">
+        <label for="Year">Année:</label>
+        <InputNumber id="year" class="form-control" @bind-Value="vehicle.Year" />
+    </div>
+
+    <div class="form-group">
+        <label for="Mileage">Kilométrage:</label>
+        <InputNumber id="mileage" class="form-control" @bind-Value="vehicle.Mileage" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Ajouter</button>
+</EditForm>
+
+@code {
+
+    private int _selectedBrandId;
+    public int SelectedBrandId
+    {
+        get => _selectedBrandId;
+        set
+        {
+            if(_selectedBrandId != value)
+            {
+                _selectedBrandId = value;
+                _ = OnBrandChanged(value); // _ pour ignorer le résultat de la tâche
+            }
+        }
+    }
+    private int selectedCarId;
+
+    private List<BrandModelDeserialize> brands = new List<BrandModelDeserialize>();
+    private List<CarModelDeserialize> cars = new List<CarModelDeserialize>();
+
+
+    private VehicleModelDeserialize vehicle = new VehicleModelDeserialize()
+    {
+        Car = new CarModelDeserialize
+        {
+                Brand = new BrandModelDeserialize()
+        }
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        brands = await HttpClient.GetFromJsonAsync<List<BrandModelDeserialize>>("api/Brand");
+    }
+
+    private async Task OnBrandChanged(int value)
+    {
+        cars = await HttpClient.GetFromJsonAsync<List<CarModelDeserialize>>($"api/car/bybrand/{SelectedBrandId}");
+        await InvokeAsync(StateHasChanged); // Demander explicitement la mise à jour de l'UI
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        vehicle.Car.Id = selectedCarId;
+        vehicle.Car.Brand.Id = SelectedBrandId;
+
+        var response = await HttpClient.PostAsJsonAsync("api/Vehicle", vehicle);
+        if (response.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo("/vehicles");
+        }
+        else
+        {
+            Console.WriteLine("Erreur lors de l'ajout du véhicule.");
+        }
+    }
+}

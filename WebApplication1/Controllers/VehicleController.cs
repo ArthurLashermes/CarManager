@@ -1,5 +1,4 @@
-﻿using Client.Pages;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Domain;
 using Server.Factory;
@@ -10,21 +9,19 @@ using WebApplication1;
 
 namespace Server.Controllers
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
 	[ApiController]
 	public class VehicleController : ControllerBase
 	{
 		private readonly ApplicationDbContext _context;
 		private readonly ILogger<VehicleController> _logger;
         private readonly VehicleFactory _factory;
-        private readonly VehicleService _service;
 
-        public VehicleController(ApplicationDbContext context, ILogger<VehicleController> logger,VehicleFactory vehicleFactory, VehicleService vehicleService)
+        public VehicleController(ApplicationDbContext context, ILogger<VehicleController> logger,VehicleFactory vehicleFactory)
 		{
 			_context = context;
 			_logger = logger;
             _factory = vehicleFactory;
-            _service = vehicleService;
         }
 
 		[HttpGet]
