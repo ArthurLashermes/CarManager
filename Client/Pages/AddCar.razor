@@ -11,6 +11,11 @@
 	<DataAnnotationsValidator />
 	<ValidationSummary />
 
+	@if (!string.IsNullOrEmpty(customValidationError))
+	{
+		<div class="alert alert-danger">@customValidationError</div>
+	}
+
 	<div class="form-group">
 		<label for="brandId">Marque:</label>
 		<InputSelect id="brandId" class="form-control" @bind-Value="selectedBrandId">
@@ -45,6 +50,7 @@
 	private List<BrandModelDeserialize> brands = new List<BrandModelDeserialize>(); // Remplacer BrandModel par le type correct pour votre modèle de marque
 	private List<CarModelDeserialize> cars = new List<CarModelDeserialize>();
 	private bool nameExists = false;
+	private string customValidationError;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -53,6 +59,19 @@
 
 	private async Task HandleValidSubmit()
 	{
+		customValidationError = string.Empty;
+		if (selectedBrandId == 0)
+		{
+			customValidationError = "Vous devez sélectionnez une marque ";
+			return;
+		}
+
+		if (string.IsNullOrEmpty(carModel.Name))
+		{
+			customValidationError = "Le nom du model ne doit pas être nul.";
+			return;
+		}
+
 		nameExists = false;
 
 		cars = await HttpClient.GetFromJsonAsync<List<CarModelDeserialize>>($"api/car/bybrand/{selectedBrandId}");
@@ -70,7 +89,7 @@
 		}
 		else
 		{
-			Console.WriteLine("Erreur lors de l'ajout du modèle de véhicule.");
+			customValidationError = await response.Content.ReadAsStringAsync();
 		}
 	}
 }

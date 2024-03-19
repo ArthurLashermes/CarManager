@@ -1,5 +1,4 @@
 ﻿using Shared.Enum;
-using System.ComponentModel.DataAnnotations;
 
 namespace Server.Domain
 {
@@ -20,7 +19,20 @@ namespace Server.Domain
 			}
 		}
 
-		public int Year { get; set; }
+		private int _year;
+		public int Year
+		{
+			get => _year;
+			set
+			{
+				if(value < 1900 || value > DateTime.Now.Year)
+				{
+					throw new ArgumentException($"L'année du véhicule doit être comprise entre 1900 et {DateTime.Now.Year}");
+				}
+
+				_year = value;
+			}
+		}
 
 		private int _mileage;
 		public int Mileage

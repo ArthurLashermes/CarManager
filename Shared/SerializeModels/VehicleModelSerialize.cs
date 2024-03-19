@@ -1,5 +1,4 @@
 ﻿using Shared.Enum;
-using System.ComponentModel.DataAnnotations;
 
 namespace Shared.SerializeModels;
 

@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Threading.Tasks;
-
-public class ErrorHandlingMiddleware
+﻿public class ErrorHandlingMiddleware
 {
     private readonly RequestDelegate _next;
 

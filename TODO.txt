@@ -1,29 +1,20 @@
-- Ajout véhicule avec formulaire propre (vérification front pas de texte vide, plaque d'immatriculation format correct) DONE
-
 - Vérifier suppression fonctionne
 
 - Créer des données cohérentes (Retard maintenance surtout)
 
 - Traduction
 
-- Page véhicule détaillé DONE
-
-- Stylisé toute les pages
-
 - Corriger tout les warnings
-
-- Compléter les TUS (si pas tous fait)
 
 - Supprimer les commentaires
 
 - Ajouter un composant Retour page d'avant sur toute les pages
 
-- Energie doit venir d'une IEnumerable
 
-- Vérifier lors de l'ajout d'un véhicule que l'immatriculation n'existe pas déjà DONE 
 
-- Ajouter l'edit de modele
+- Ajouter l'edit de modele 
 
-- Ajouter l'ajout d'entretien dans la page detail vehicule
+- Ajouter l'ajout d'entretien dans la page detail vehicule 
 
-- Faire une enum pour EnergyType DONE
+- Possibilité d'ajouter un nouveau modele et pas un existant 
+

@@ -120,9 +120,13 @@ namespace Server.Controllers
         }
 
         [HttpGet("exists/{registrationNumber}")]
-        public async Task<ActionResult<bool>> RegistrationNumberExists(string registrationNumber)
+        public async Task<ActionResult<bool>> RegistrationNumberExists(string registrationNumber, int? excludeVehicleId = null)
         {
-            var vehicleExists = await _context.Vehicles.AnyAsync(v => v.RegistrationNumber == registrationNumber);
+            var vehicleExists = await _context.Vehicles
+                .Where(v => v.RegistrationNumber == registrationNumber)
+                .Where(v => !excludeVehicleId.HasValue || v.Id != excludeVehicleId.Value)
+                .AnyAsync();
+
             return vehicleExists;
         }
     }

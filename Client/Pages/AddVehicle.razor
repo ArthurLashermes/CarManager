@@ -114,7 +114,7 @@
             customValidationError += "\nLa sélection d'un modèle est requise.";
             return;
         }
-
+        
         var registrationNumberExists = await HttpClient.GetFromJsonAsync<bool>($"api/Vehicle/exists/{vehicle.RegistrationNumber}");
         if (registrationNumberExists)
         {
@@ -132,7 +132,7 @@
         }
         else
         {
-            Console.WriteLine("Erreur lors de l'ajout du véhicule.");
+            customValidationError = await response.Content.ReadAsStringAsync();
         }
     }
 }

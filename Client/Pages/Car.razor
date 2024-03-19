@@ -31,6 +31,7 @@ else
                     <td>@car.Name</td>
                     <td>@car.MaintenanceFrequency</td>
                     <td>
+                        <button class="btn btn-info" @onclick="() => NavigateToCarDetail(car.Id)">🔍</button>
                         <button class="btn btn-danger" @onclick="() => DeleteCar(car.Id)">❌</button>
                     </td>
                 </tr>
@@ -40,7 +41,7 @@ else
 }
 
 @code {
-	private List<CarModelDeserialize> cars = new List<CarModelDeserialize>();
+    private List<CarModelDeserialize> cars = new List<CarModelDeserialize>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,6 +74,10 @@ else
         NavigationManager.NavigateTo("/car/add");
     }
 
+    private void NavigateToCarDetail(int carId)
+    {
+        NavigationManager.NavigateTo($"/CarDetail/{carId}");
+    }
 }
 
 <style>
