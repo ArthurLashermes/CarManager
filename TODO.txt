@@ -8,5 +8,4 @@
 
 - Supprimer les commentaires
 
-- Ajouter un composant Retour page d'avant sur toute les pages
 
