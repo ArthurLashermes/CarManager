@@ -1,7 +1,4 @@
-﻿using Shared.DeserializeModels;
-using System.ComponentModel.DataAnnotations;
-
-namespace Shared.DeserializeModels
+﻿namespace Shared.DeserializeModels
 {
 	public class BrandModelDeserialize : IDeserializeModel
     {

@@ -2,14 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using Server.Domain;
 using Server.Factory;
-using Server.Services;
 using Shared.DeserializeModels;
 using Shared.SerializeModels;
 using WebApplication1;
 
 namespace Server.Controllers
 {
-    [Route("api/[controller]")]
+	[Route("api/[controller]")]
 	[ApiController]
 	public class VehicleController : ControllerBase
 	{

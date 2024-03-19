@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Server.Factory;
-using Server.Services;
-using System.Text.Json.Serialization;
 using Server.Middleware;
+using Server.Services;
 using WebApplication1;
 using Path = System.IO.Path;
 
@@ -33,7 +32,6 @@ builder.Services.AddScoped<VehicleFactory>();
 builder.Services.AddScoped<MaintenanceFactory>(); 
 
 builder.Services.AddScoped<MaintenanceService>();
-builder.Services.AddScoped<VehicleService>();
 
 var app = builder.Build();
 

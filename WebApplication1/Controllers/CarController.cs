@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using Server.Domain;
-using System.Reflection.Metadata;
 using Server.Factory;
 using Shared.DeserializeModels;
 using Shared.SerializeModels;

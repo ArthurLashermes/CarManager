@@ -1,9 +1,8 @@
 ﻿using Shared.Enum;
-using System.ComponentModel.DataAnnotations;
 
 namespace Shared.DeserializeModels
 {
-    public class VehicleModelDeserialize : IDeserializeModel
+	public class VehicleModelDeserialize : IDeserializeModel
     {
 		public int Id { get; set; }
         public string RegistrationNumber { get; set; }

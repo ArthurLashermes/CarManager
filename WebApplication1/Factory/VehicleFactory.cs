@@ -11,7 +11,6 @@ namespace Server.Factory
         private readonly MaintenanceFactory _maintenanceFactory;
         private readonly MaintenanceService _maintenanceService;
 
-
         public VehicleFactory(CarFactory carFactory, MaintenanceFactory maintenanceFactory, MaintenanceService maintenanceService)
         {
             _carFactory = carFactory;

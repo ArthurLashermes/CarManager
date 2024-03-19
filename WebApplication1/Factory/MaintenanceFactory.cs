@@ -1,13 +1,10 @@
 ﻿using Server.Domain;
 using Shared.DeserializeModels;
 using Shared.SerializeModels;
-using System.Drawing;
 
 namespace Server.Factory
 {
-
-
-    public class MaintenanceFactory : IFactory
+	public class MaintenanceFactory : IFactory
     {
         public IDeserializeModel DomainToDeserializeModel(IDomain domain)
         {

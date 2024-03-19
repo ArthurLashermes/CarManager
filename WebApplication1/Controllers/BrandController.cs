@@ -3,9 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Server.Domain;
 using Server.Factory;
 using Shared.DeserializeModels;
-using Shared.SerializeModels;
 using WebApplication1;
-
 
 namespace Server.Controllers
 {
