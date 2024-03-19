@@ -3,6 +3,7 @@ using Serilog;
 using Server.Factory;
 using Server.Services;
 using System.Text.Json.Serialization;
+using Server.Middleware;
 using WebApplication1;
 using Path = System.IO.Path;
 
@@ -35,6 +36,8 @@ builder.Services.AddScoped<MaintenanceService>();
 builder.Services.AddScoped<VehicleService>();
 
 var app = builder.Build();
+
+app.UseErrorHandlingMiddleware();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
