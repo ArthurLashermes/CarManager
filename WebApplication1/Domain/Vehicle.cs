@@ -1,10 +1,14 @@
-﻿namespace Server.Domain
+﻿using Shared.Enum;
+using System.ComponentModel.DataAnnotations;
+
+namespace Server.Domain
 {
 	public class Vehicle : IDomain
     {
 		public int Id { get; set; }
 
 		private string _registrationNumber;
+		
 		public string RegistrationNumber
 		{
 			get => _registrationNumber;
@@ -15,6 +19,7 @@
 				_registrationNumber = value;
 			}
 		}
+
 		public int Year { get; set; }
 
 		private int _mileage;
@@ -28,7 +33,7 @@
 				_mileage = value;
 			}
 		}
-		public string EnergyType { get; set; }
+		public EnergyTypeEnum EnergyType { get; set; }
 		public int CarId { get; set; }
 		public Car Car { get; set; }
 		public virtual ICollection<Maintenance> Maintenances { get; set; }

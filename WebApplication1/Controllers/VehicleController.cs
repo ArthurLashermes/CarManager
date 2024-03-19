@@ -63,7 +63,7 @@ namespace Server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditVehicle([FromBody] VehicleModelSerialize vehicleToEdit, int id)
+        public async Task<IActionResult> EditVehicle(int id, [FromBody] VehicleModelSerialize vehicleToEdit)
         {
             var vehicleRepository = _context.Set<Vehicle>();
 
@@ -117,6 +117,13 @@ namespace Server.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpGet("exists/{registrationNumber}")]
+        public async Task<ActionResult<bool>> RegistrationNumberExists(string registrationNumber)
+        {
+            var vehicleExists = await _context.Vehicles.AnyAsync(v => v.RegistrationNumber == registrationNumber);
+            return vehicleExists;
         }
     }
 }

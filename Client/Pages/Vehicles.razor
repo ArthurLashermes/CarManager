@@ -26,11 +26,12 @@ else
         <tbody>
             @foreach (var vehicle in vehicles)
             {
-                <tr>
+                <tr @ondblclick="() => NavigateToVehicleDetail(vehicle.Id)">
                     <td>@vehicle.Car.Brand.Name</td>
                     <td>@vehicle.Car.Name</td>
                     <td>@vehicle.RegistrationNumber</td>
                     <td>
+                        <button class="btn btn-info" @onclick="() => NavigateToVehicleDetail(vehicle.Id)">🔍</button>
                         <button class="btn btn-danger" @onclick="() => DeleteVehicle(vehicle.Id)">❌</button>
                     </td>
                 </tr>
@@ -72,6 +73,11 @@ else
     private void NavigateToAddVehiclePage()
     {
         NavigationManager.NavigateTo("/vehicle/add");
+    }
+
+    private void NavigateToVehicleDetail(int vehicleId)
+    {
+        NavigationManager.NavigateTo($"/VehicleDetail/{vehicleId}");
     }
 }
 

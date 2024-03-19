@@ -1,0 +1,76 @@
+﻿@page "/car/add"
+@using Shared.DeserializeModels
+@using Shared.SerializeModels
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+
+<h3>Ajouter un nouveau modèle de voiture</h3>
+
+<EditForm Model="@carModel" OnValidSubmit="HandleValidSubmit">
+	<DataAnnotationsValidator />
+	<ValidationSummary />
+
+	<div class="form-group">
+		<label for="brandId">Marque:</label>
+		<InputSelect id="brandId" class="form-control" @bind-Value="selectedBrandId">
+			<option value="">Sélectionnez une marque</option>
+			@foreach (var brand in brands)
+			{
+				<option value="@brand.Id">@brand.Name</option>
+			}
+		</InputSelect>
+	</div>
+
+	<div class="form-group">
+		<label for="name">Nom:</label>
+		<InputText id="name" class="form-control" @bind-Value="carModel.Name" />
+		@if (nameExists)
+		{
+			<span class="text-danger">Ce nom de modèle existe déjà pour la marque sélectionnée.</span>
+		}
+	</div>
+
+	<div class="form-group">
+		<label for="maintenanceFrequency">Fréquence de maintenance:</label>
+		<InputNumber id="maintenanceFrequency" class="form-control" @bind-Value="carModel.MaintenanceFrequency" />
+	</div>
+
+	<button type="submit" class="btn btn-primary">Ajouter</button>
+</EditForm>
+
+@code {
+	private int selectedBrandId;
+	private CarModelSerialize carModel = new CarModelSerialize();
+	private List<BrandModelDeserialize> brands = new List<BrandModelDeserialize>(); // Remplacer BrandModel par le type correct pour votre modèle de marque
+	private List<CarModelDeserialize> cars = new List<CarModelDeserialize>();
+	private bool nameExists = false;
+
+	protected override async Task OnInitializedAsync()
+	{
+		brands = await HttpClient.GetFromJsonAsync<List<BrandModelDeserialize>>("api/Brand");
+	}
+
+	private async Task HandleValidSubmit()
+	{
+		nameExists = false;
+
+		cars = await HttpClient.GetFromJsonAsync<List<CarModelDeserialize>>($"api/car/bybrand/{selectedBrandId}");
+
+		nameExists = cars.Any(car => car.Name.Equals(carModel.Name, StringComparison.OrdinalIgnoreCase));
+
+		if (nameExists) return;
+
+		carModel.BrandId = selectedBrandId;
+
+		var response = await HttpClient.PostAsJsonAsync("api/Car", carModel);
+		if (response.IsSuccessStatusCode)
+		{
+			NavigationManager.NavigateTo("/cars");
+		}
+		else
+		{
+			Console.WriteLine("Erreur lors de l'ajout du modèle de véhicule.");
+		}
+	}
+}
