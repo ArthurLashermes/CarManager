@@ -1,0 +1,11 @@
+﻿@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<button class="btn btn-secondary" @onclick="GoBack">Retour</button>
+
+@code {
+    private async Task GoBack()
+    {
+        await JSRuntime.InvokeVoidAsync("history.back");
+    }
+}

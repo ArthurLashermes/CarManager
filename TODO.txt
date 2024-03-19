@@ -10,5 +10,3 @@
 
 - Ajouter un composant Retour page d'avant sur toute les pages
 
-- Ajouter l'ajout d'entretien dans la page detail vehicule 
-
