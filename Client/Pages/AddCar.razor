@@ -7,7 +7,7 @@
 
 <h3>Ajouter un nouveau modèle de voiture</h3>
 
-<EditForm Model="@carModel" OnValidSubmit="HandleValidSubmit">
+<EditForm Model="@car" OnValidSubmit="HandleValidSubmit">
 	<DataAnnotationsValidator />
 	<ValidationSummary />
 
@@ -29,16 +29,12 @@
 
 	<div class="form-group">
 		<label for="name">Nom:</label>
-		<InputText id="name" class="form-control" @bind-Value="carModel.Name" />
-		@if (nameExists)
-		{
-			<span class="text-danger">Ce nom de modèle existe déjà pour la marque sélectionnée.</span>
-		}
+		<InputText id="name" class="form-control" @bind-Value="car.Name" />
 	</div>
 
 	<div class="form-group">
 		<label for="maintenanceFrequency">Fréquence de maintenance:</label>
-		<InputNumber id="maintenanceFrequency" class="form-control" @bind-Value="carModel.MaintenanceFrequency" />
+		<InputNumber id="maintenanceFrequency" class="form-control" @bind-Value="car.MaintenanceFrequency" />
 	</div>
 
 	<button type="submit" class="btn btn-primary">Ajouter</button>
@@ -46,7 +42,7 @@
 
 @code {
 	private int selectedBrandId;
-	private CarModelSerialize carModel = new CarModelSerialize();
+	private CarModelSerialize car = new CarModelSerialize();
 	private List<BrandModelDeserialize> brands = new List<BrandModelDeserialize>(); // Remplacer BrandModel par le type correct pour votre modèle de marque
 	private List<CarModelDeserialize> cars = new List<CarModelDeserialize>();
 	private bool nameExists = false;
@@ -62,27 +58,28 @@
 		customValidationError = string.Empty;
 		if (selectedBrandId == 0)
 		{
-			customValidationError = "Vous devez sélectionnez une marque ";
+			customValidationError = "Vous devez sélectionnez une marque";
 			return;
 		}
 
-		if (string.IsNullOrEmpty(carModel.Name))
+		if (string.IsNullOrEmpty(car.Name))
 		{
-			customValidationError = "Le nom du model ne doit pas être nul.";
+			customValidationError = "Le nom du modèle ne doit pas être vide";
 			return;
 		}
 
-		nameExists = false;
+		var encodedName = Uri.EscapeDataString(car.Name);
+		var carNameExists = await HttpClient.GetFromJsonAsync<bool>($"api/Car/exists/{encodedName}");
 
-		cars = await HttpClient.GetFromJsonAsync<List<CarModelDeserialize>>($"api/car/bybrand/{selectedBrandId}");
+		if (carNameExists)
+		{
+			customValidationError = "Un véhicule avec cette plaque d'immatriculation existe déjà.";
+			return;
+		}
 
-		nameExists = cars.Any(car => car.Name.Equals(carModel.Name, StringComparison.OrdinalIgnoreCase));
+		car.BrandId = selectedBrandId;
 
-		if (nameExists) return;
-
-		carModel.BrandId = selectedBrandId;
-
-		var response = await HttpClient.PostAsJsonAsync("api/Car", carModel);
+		var response = await HttpClient.PostAsJsonAsync("api/Car", car);
 		if (response.IsSuccessStatusCode)
 		{
 			NavigationManager.NavigateTo("/cars");

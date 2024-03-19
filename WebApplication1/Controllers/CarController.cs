@@ -137,5 +137,16 @@ namespace Server.Controllers
 
         }
 
-    }
+        [HttpGet("exists/{name}")]
+        public async Task<ActionResult<bool>> CarNameExists(string name, int? excludeCarId = null)
+        {
+            var carExists = await _context.Cars
+                .Where(c => c.Name == name)
+                .Where(c => !excludeCarId.HasValue || c.Id != excludeCarId.Value)
+                .AnyAsync();
+
+            return carExists;
+        }
+
+	}
 }

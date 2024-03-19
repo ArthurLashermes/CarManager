@@ -17,7 +17,19 @@
 		}
 		public int BrandId { get; set; }
 		public Brand Brand { get; set; }
-		public int MaintenanceFrequency { get; set; }
+
+		private int _maintenanceFrequency;
+		public int MaintenanceFrequency
+		{
+			get => _maintenanceFrequency;
+			set
+			{
+				if (value < 0)
+					throw new ArgumentException("La fréquence d'entretien ne peut pas être négative.");
+				_maintenanceFrequency = value;
+			}
+		}
+
 		public virtual ICollection<Vehicle> Vehicles { get; set; }
 	}
 }

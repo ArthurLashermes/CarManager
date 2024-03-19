@@ -1,0 +1,91 @@
+﻿@page "/CarDetail/{CarId:int}"
+@using Shared.DeserializeModels
+@using Shared.SerializeModels
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<h3>Modifier Voiture</h3>
+
+@if (car is null)
+{
+	<p><em>Chargement...</em></p>
+}
+else
+{
+	@if (!string.IsNullOrEmpty(customValidationError))
+	{
+		<div class="alert alert-danger">@customValidationError</div>
+	}
+
+	<EditForm Model="@car" OnValidSubmit="HandleValidSubmit">
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+
+		<div class="form-group">
+			<label for="Nom">Nom du modèle:</label>
+			<InputText id="name" class="form-control" @bind-Value="car.Name" />
+		</div>
+
+		<div class="form-group">
+			<label for="MileageMaintenance">Fréquence d'entretien':</label>
+			<InputNumber id="mileageMaintenance" class="form-control" @bind-Value="car.MaintenanceFrequency" />
+		</div>
+
+		<button type="submit" class="btn btn-primary">Sauvegarder les modifications</button>
+
+	</EditForm>
+}
+
+@code {
+	[Parameter]
+	public int CarId { get; set; }
+
+	private CarModelDeserialize car = new CarModelDeserialize();
+	private string customValidationError;
+
+	protected override async Task OnInitializedAsync()
+	{
+		car = await HttpClient.GetFromJsonAsync<CarModelDeserialize>($"api/Car/{CarId}");
+	}
+
+	private async Task HandleValidSubmit()
+	{
+		customValidationError = string.Empty;
+
+		if (string.IsNullOrEmpty(car.Name))
+		{
+			customValidationError = "Le nom du modèle ne doit pas être vide";
+			return;
+		}
+
+		var encodedName = Uri.EscapeDataString(car.Name);
+		var carNameExists = await HttpClient.GetFromJsonAsync<bool>($"api/Car/exists/{encodedName}?excludeCarId={CarId}");
+		if (carNameExists)
+		{
+			customValidationError = "Un modèle de voiture existe déjà pour la même marque.";
+			return;
+		}
+
+		var carEdited = ConvertToSerializeModel(car);
+		var response = await HttpClient.PutAsJsonAsync($"api/car/{CarId}", carEdited);
+
+		if (response.IsSuccessStatusCode)
+		{
+			NavigationManager.NavigateTo("/cars");
+		}
+		else
+		{
+			customValidationError = await response.Content.ReadAsStringAsync();
+		}
+	}
+
+	private CarModelSerialize ConvertToSerializeModel(CarModelDeserialize car)
+	{
+		return new CarModelSerialize
+			{
+				Name = car.Name,
+				MaintenanceFrequency = car.MaintenanceFrequency,
+				BrandId = car.Brand.Id
+			};
+	}
+}
