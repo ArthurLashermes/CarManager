@@ -107,7 +107,7 @@
 	private async Task UpdateVehicle()
 	{
 		customValidationError = string.Empty;
-		if(originalRegistrationNumber != vehicle.RegistrationNumber)
+		if (originalRegistrationNumber != vehicle.RegistrationNumber)
 		{
 			var registrationNumberExists = await HttpClient.GetFromJsonAsync<bool>($"api/Vehicle/exists/{vehicle.RegistrationNumber}?excludeVehicleId={VehicleId}");
 			if (registrationNumberExists)
@@ -149,15 +149,10 @@
 
 		if (response.IsSuccessStatusCode)
 		{
-			// La maintenance a été ajoutée avec succès
-			Console.WriteLine("Maintenance ajoutée avec succès.");
-			// Optionnel: Rafraîchir les données du véhicule pour refléter la nouvelle maintenance
-
-			// Fermez la popup
 			ShowAddMaintenancePopup = false;
-
-			// Réinitialisez newMaintenance pour la prochaine utilisation
 			newMaintenance = new MaintenanceModelSerialize();
+			await LoadVehicleDetails();
+
 			await InvokeAsync(StateHasChanged);
 		}
 		else
@@ -165,6 +160,11 @@
 			// Gérer l'erreur
 			Console.WriteLine("Erreur lors de l'ajout de la maintenance.");
 		}
+	}
+
+	private async Task LoadVehicleDetails()
+	{
+		vehicle = await HttpClient.GetFromJsonAsync<VehicleModelDeserialize>($"api/Vehicle/{VehicleId}");
 	}
 }
 

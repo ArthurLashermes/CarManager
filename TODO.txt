@@ -10,11 +10,5 @@
 
 - Ajouter un composant Retour page d'avant sur toute les pages
 
-
-
-- Ajouter l'edit de modele 
-
 - Ajouter l'ajout d'entretien dans la page detail vehicule 
-
-- Possibilité d'ajouter un nouveau modele et pas un existant 
 
