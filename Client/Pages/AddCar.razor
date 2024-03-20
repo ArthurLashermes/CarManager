@@ -1,12 +1,15 @@
 ﻿@page "/car/add"
+@using Client.Translations
+@using Microsoft.Extensions.Localization
 @using Shared.DeserializeModels
 @using Shared.SerializeModels
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<Dictionary> Localizer
 
 <BackButton />
 
-<h3>Ajouter un nouveau modèle de voiture</h3>
+<h3>@Localizer[nameof(Dictionary.AddCarString)]</h3>
 
 <EditForm Model="@car" OnValidSubmit="HandleValidSubmit">
 	<DataAnnotationsValidator />
@@ -20,7 +23,7 @@
 	<div class="form-group">
 		<label for="brandId">Marque:</label>
 		<InputSelect id="brandId" class="form-control" @bind-Value="selectedBrandId">
-			<option value="">Sélectionnez une marque</option>
+			<option value="">@Localizer[nameof(Dictionary.SelectBrandString)]</option>
 			@foreach (var brand in brands)
 			{
 				<option value="@brand.Id">@brand.Name</option>
@@ -29,22 +32,22 @@
 	</div>
 
 	<div class="form-group">
-		<label for="name">Nom:</label>
+		<label for="name">@Localizer[nameof(Dictionary.NameString)]</label>
 		<InputText id="name" class="form-control" @bind-Value="car.Name" />
 	</div>
 
 	<div class="form-group">
-		<label for="maintenanceFrequency">Fréquence de maintenance:</label>
+		<label for="maintenanceFrequency">@Localizer[nameof(Dictionary.MaintenanceFrequencyString)]:</label>
 		<InputNumber id="maintenanceFrequency" class="form-control" @bind-Value="car.MaintenanceFrequency" />
 	</div>
 
-	<button type="submit" class="btn btn-primary">Ajouter</button>
+	<button type="submit" class="btn btn-primary">@Localizer[nameof(Dictionary.AddString)]</button>
 </EditForm>
 
 @code {
 	private int selectedBrandId;
 	private CarModelSerialize car = new CarModelSerialize();
-	private List<BrandModelDeserialize> brands = new List<BrandModelDeserialize>(); // Remplacer BrandModel par le type correct pour votre modèle de marque
+	private List<BrandModelDeserialize> brands = new List<BrandModelDeserialize>();
 	private List<CarModelDeserialize> cars = new List<CarModelDeserialize>();
 	private bool nameExists = false;
 	private string customValidationError;
@@ -59,13 +62,13 @@
 		customValidationError = string.Empty;
 		if (selectedBrandId == 0)
 		{
-			customValidationError = "Vous devez sélectionnez une marque";
+			customValidationError = @Localizer[nameof(Dictionary.ShouldSelectBrandString)];
 			return;
 		}
 
 		if (string.IsNullOrEmpty(car.Name))
 		{
-			customValidationError = "Le nom du modèle ne doit pas être vide";
+			customValidationError = @Localizer[nameof(Dictionary.ShouldSelectCarString)];
 			return;
 		}
 
@@ -74,7 +77,7 @@
 
 		if (carNameExists)
 		{
-			customValidationError = "Un véhicule avec cette plaque d'immatriculation existe déjà.";
+			customValidationError = @Localizer[nameof(Dictionary.ExistingRegisterString)];
 			return;
 		}
 

@@ -1,13 +1,16 @@
 ﻿@page "/vehicle/add"
+@using Client.Translations
+@using Microsoft.Extensions.Localization
 @using Shared.DeserializeModels
 @using Shared.Enum
 @using Shared.SerializeModels
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<Dictionary> Localizer
 
 <BackButton />
 
-<h3>Ajouter un Véhicule</h3>
+<h3>@Localizer[nameof(Dictionary.AddVehicleString)]</h3>
 
 @if (!string.IsNullOrEmpty(customValidationError))
 {
@@ -21,7 +24,7 @@
     <div class="form-group">
         <label for="brandId">Marque:</label>
         <InputSelect id="brandId" class="form-control" @bind-Value="SelectedBrandId">
-            <option value="">Sélectionnez une marque</option>
+            <option value="">@Localizer[nameof(Dictionary.SelectBrandString)]</option>
             @foreach (var brand in brands)
             {
                 <option value="@brand.Id">@brand.Name</option>
@@ -32,7 +35,7 @@
     <div class="form-group">
         <label for="carId">Modèle:</label>
         <InputSelect id="carId" class="form-control" @bind-Value="selectedCarId">
-            <option value="">Sélectionnez un modèle</option>
+            <option value="">@Localizer[nameof(Dictionary.SelectCarString)]</option>
             @foreach (var car in cars)
             {
                 <option value="@car.Id">@car.Name</option>
@@ -41,12 +44,12 @@
     </div>
 
     <div class="form-group">
-        <label for="registrationNumber">Immatriculation:</label>
+        <label for="registrationNumber">@Localizer[nameof(Dictionary.RegisterNumberString)]</label>
         <InputText id="registrationNumber" class="form-control" @bind-Value="vehicle.RegistrationNumber" />
     </div>
 
     <div class="form-group">
-        <label for="EnergyType">Énergie:</label>
+        <label for="EnergyType">@Localizer[nameof(Dictionary.EnergyString)]:</label>
         <InputSelect id="energyType" class="form-control" @bind-Value="vehicle.EnergyType">
             @foreach (var energy in Enum.GetValues<EnergyTypeEnum>())
             {
@@ -56,12 +59,12 @@
     </div>
 
     <div class="form-group">
-        <label for="Year">Année:</label>
+        <label for="Year">@Localizer[nameof(Dictionary.YearString)]</label>
         <InputNumber id="year" class="form-control" @bind-Value="vehicle.Year" />
     </div>
 
     <div class="form-group">
-        <label for="Mileage">Kilométrage:</label>
+        <label for="Mileage">@Localizer[nameof(Dictionary.MileageString)]</label>
         <InputNumber id="mileage" class="form-control" @bind-Value="vehicle.Mileage" />
     </div>
 
@@ -107,23 +110,22 @@
 
         if (SelectedBrandId == 0)
         {
-            customValidationError = "La sélection d'une marque est requise.";
+            customValidationError = @Localizer[nameof(Dictionary.ShouldSelectBrandString)];
             return;
         }
 
         if (selectedCarId == 0)
         {
-            customValidationError += "\nLa sélection d'un modèle est requise.";
+            customValidationError += @Localizer[nameof(Dictionary.ShouldSelectCarString)];
             return;
         }
         
         var registrationNumberExists = await HttpClient.GetFromJsonAsync<bool>($"api/Vehicle/exists/{vehicle.RegistrationNumber}");
         if (registrationNumberExists)
         {
-            customValidationError = "Un véhicule avec cette plaque d'immatriculation existe déjà.";
+            customValidationError = @Localizer[nameof(Dictionary.ExistingRegisterString)];
             return;
         }
-
 
         vehicle.CarId = selectedCarId;
 

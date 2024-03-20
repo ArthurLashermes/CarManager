@@ -19,8 +19,8 @@
         set
         {
             if (CultureInfo.CurrentCulture == value) return;
-            LocalStorage.SetItemAsStringAsync("BlazorCulture", value.Name);// Sauvegarde dans LocalStorage
-            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);// On recharge la page
+            LocalStorage.SetItemAsStringAsync("BlazorCulture", value.Name);
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
         }
     }
 }

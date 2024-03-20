@@ -1,27 +1,30 @@
 ﻿@page "/cars"
+@using Client.Translations
+@using Microsoft.Extensions.Localization
 @using Shared.DeserializeModels
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<Dictionary> Localizer
 
 <BackButton />
 
 <div class="vehicles-header">
-    <h3>Modèles</h3>
+    <h3>@Localizer[nameof(Dictionary.CarsString)]</h3>
     <button class="btn btn-primary add-vehicle-btn" @onclick="NavigateToAddVehiclePage">+</button>
 </div>
 
 @if (cars.Count == 0)
 {
-    <p> Aucun modèle à afficher</p>
+    <p>@Localizer[nameof(Dictionary.NoCarDisplayString)]</p>
 }
 else
 {
     <table class="table">
         <thead>
             <tr>
-                <th>Marque</th>
-                <th>Modèle</th>
-                <th>Fréquence</th>
+                <th>@Localizer[nameof(Dictionary.BrandString)]</th>
+                <th>@Localizer[nameof(Dictionary.CarString)]</th>
+                <th>@Localizer[nameof(Dictionary.FrequencyMaintenanceString)]</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -63,11 +66,11 @@ else
         if (response.IsSuccessStatusCode)
         {
             cars.RemoveAll(v => v.Id == carId);
-            StateHasChanged(); // Raffraichit le composant pour refléter la suppression
+            StateHasChanged();
         }
         else
         {
-            Console.WriteLine("Erreur lors de la suppression du model.");
+            Console.WriteLine("Erreur lors de la suppression du modèle.");
         }
     }
 

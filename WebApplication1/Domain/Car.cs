@@ -11,7 +11,7 @@
 			set
 			{
 				if (string.IsNullOrWhiteSpace(value))
-					throw new ArgumentException("Le nom du modèle doit avoir au moins 1 caractère.");
+					throw new ArgumentException("Le nom du modèle doit avoir au moins 1 charactère.");
 				_name = value;
 			}
 		}
@@ -25,7 +25,7 @@
 			set
 			{
 				if (value < 0)
-					throw new ArgumentException("La fréquence d'entretien ne peut pas être négative.");
+					throw new ArgumentException("La fréquence d'entretien ne peut pas être négative");
 				_maintenanceFrequency = value;
 			}
 		}

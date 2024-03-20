@@ -1,28 +1,31 @@
 ﻿@page "/"
+@using Client.Translations
+@using Microsoft.Extensions.Localization
 @using Shared.DeserializeModels
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<Dictionary> Localizer
 
 <BackButton />
 
-<h3>Véhicules en retard d'entretien</h3>
+<h3>@Localizer[nameof(Dictionary.VehicleLateForMaintenanceString)]</h3>
 
 @if (vehiclesInDelay == null)
 {
-	<p><em>Chargement...</em></p>
+	<p><em>@Localizer[nameof(Dictionary.LoadingString)]</em></p>
 }
 else if (vehiclesInDelay.Count == 0)
 {
-	<p>Aucun véhicule en retard d'entretien.</p>
+	<p>@Localizer[nameof(Dictionary.NoVehicleLateForMaintenanceString)]</p>
 }
 else
 {
 	<table class="table">
 		<thead>
 			<tr>
-				<th>Marque</th>
-				<th>Modèle</th>
-				<th>Immatriculation</th>
+				<th>@Localizer[nameof(Dictionary.BrandString)]</th>
+				<th>@Localizer[nameof(Dictionary.CarString)]</th>
+				<th>@Localizer[nameof(Dictionary.RegisterNumberString)]</th>
 				<th>Retard (jours)</th>
 				<th></th>
 			</tr>
@@ -50,14 +53,7 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		try
-		{
-			vehiclesInDelay = await HttpClient.GetFromJsonAsync<List<VehicleModelDeserialize>>("api/Vehicle");
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine($"Une erreur est survenue: {ex.Message}");
-		}
+		vehiclesInDelay = await HttpClient.GetFromJsonAsync<List<VehicleModelDeserialize>>("api/Vehicle");
 	}
 
 	private void NavigateToVehicleDetail(int vehicleId)

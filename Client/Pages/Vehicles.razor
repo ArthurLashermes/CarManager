@@ -1,96 +1,92 @@
 ﻿@page "/vehicles"
+@using Client.Translations
+@using Microsoft.Extensions.Localization
 @using Shared.DeserializeModels
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<Dictionary> Localizer
 
 <BackButton />
 
 <div class="vehicles-header">
-    <h3>Véhicules</h3>
-    <button class="btn btn-primary add-vehicle-btn" @onclick="NavigateToAddVehiclePage">+</button>
+	<h3>@Localizer[nameof(Dictionary.VehiclesString)]</h3>
+	<button class="btn btn-primary add-vehicle-btn" @onclick="NavigateToAddVehiclePage">+</button>
 </div>
 
 @if (vehicles.Count == 0)
 {
-	<p> Aucun véhicule à afficher</p>
+	<p>@Localizer[nameof(Dictionary.NoVehiclesDisplayString)]</p>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Marque</th>
-                <th>Modèle</th>
-                <th>Immatriculation</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var vehicle in vehicles)
-            {
-                <tr @ondblclick="() => NavigateToVehicleDetail(vehicle.Id)">
-                    <td>@vehicle.Car.Brand.Name</td>
-                    <td>@vehicle.Car.Name</td>
-                    <td>@vehicle.RegistrationNumber</td>
-                    <td>
-                        <button class="btn btn-info" @onclick="() => NavigateToVehicleDetail(vehicle.Id)">🔍</button>
-                        <button class="btn btn-danger" @onclick="() => DeleteVehicle(vehicle.Id)">❌</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>@Localizer[nameof(Dictionary.BrandString)]</th>
+				<th>@Localizer[nameof(Dictionary.CarString)]</th>
+				<th>@Localizer[nameof(Dictionary.RegisterNumberString)]</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var vehicle in vehicles)
+			{
+				<tr @ondblclick="() => NavigateToVehicleDetail(vehicle.Id)">
+					<td>@vehicle.Car.Brand.Name</td>
+					<td>@vehicle.Car.Name</td>
+					<td>@vehicle.RegistrationNumber</td>
+					<td>
+						<button class="btn btn-info" @onclick="() => NavigateToVehicleDetail(vehicle.Id)">🔍</button>
+						<button class="btn btn-danger" @onclick="() => DeleteVehicle(vehicle.Id)">❌</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
 }
 
-@code{
+@code {
 
-    private List<VehicleModelDeserialize> vehicles = new List<VehicleModelDeserialize>();
+	private List<VehicleModelDeserialize> vehicles = new List<VehicleModelDeserialize>();
 
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-           vehicles = await HttpClient.GetFromJsonAsync<List<VehicleModelDeserialize>>("api/Vehicle");
-        }
-        catch(Exception ex)
-        {
-            Console.WriteLine("Erreur lors du chargement des véhicules.");
-        }
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		vehicles = await HttpClient.GetFromJsonAsync<List<VehicleModelDeserialize>>("api/Vehicle");
+	}
 
-    private async Task DeleteVehicle(int vehicleId)
-    {
-        var response = await HttpClient.DeleteAsync($"api/Vehicle/{vehicleId}");
-        if (response.IsSuccessStatusCode)
-        {
-            vehicles.RemoveAll(v => v.Id == vehicleId);
-            StateHasChanged(); // Raffraichit le composant pour refléter la suppression
-        }
-        else
-        {
-            Console.WriteLine("Erreur lors de la suppression du véhicule.");
-        }
-    }
+	private async Task DeleteVehicle(int vehicleId)
+	{
+		var response = await HttpClient.DeleteAsync($"api/Vehicle/{vehicleId}");
+		if (response.IsSuccessStatusCode)
+		{
+			vehicles.RemoveAll(v => v.Id == vehicleId);
+			StateHasChanged();
+		}
+		else
+		{
+			Console.WriteLine("Erreur lors de la suppression du véhicule.");
+		}
+	}
 
-    private void NavigateToAddVehiclePage()
-    {
-        NavigationManager.NavigateTo("/vehicle/add");
-    }
+	private void NavigateToAddVehiclePage()
+	{
+		NavigationManager.NavigateTo("/vehicle/add");
+	}
 
-    private void NavigateToVehicleDetail(int vehicleId)
-    {
-        NavigationManager.NavigateTo($"/VehicleDetail/{vehicleId}");
-    }
+	private void NavigateToVehicleDetail(int vehicleId)
+	{
+		NavigationManager.NavigateTo($"/VehicleDetail/{vehicleId}");
+	}
 }
 
 <style>
-    .vehicles-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+	.vehicles-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
 
-    .add-vehicle-btn {
-        font-size: 24px;
-    }
+	.add-vehicle-btn {
+		font-size: 24px;
+	}
 </style>

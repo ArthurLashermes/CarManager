@@ -1,8 +1,11 @@
 ﻿@page "/CarDetail/{CarId:int}"
+@using Client.Translations
+@using Microsoft.Extensions.Localization
 @using Shared.DeserializeModels
 @using Shared.SerializeModels
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<Dictionary> Localizer
 
 <BackButton />
 
@@ -10,7 +13,7 @@
 
 @if (car is null)
 {
-	<p><em>Chargement...</em></p>
+	<p><em>@Localizer[nameof(Dictionary.LoadingString)]</em></p>
 }
 else
 {
@@ -24,16 +27,16 @@ else
 		<ValidationSummary />
 
 		<div class="form-group">
-			<label for="Nom">Nom du modèle:</label>
+			<label for="Nom">@Localizer[nameof(Dictionary.CarNameString)]</label>
 			<InputText id="name" class="form-control" @bind-Value="car.Name" />
 		</div>
 
 		<div class="form-group">
-			<label for="MileageMaintenance">Fréquence d'entretien':</label>
+			<label for="MileageMaintenance">@Localizer[nameof(Dictionary.FrequencyMaintenanceString)]</label>
 			<InputNumber id="mileageMaintenance" class="form-control" @bind-Value="car.MaintenanceFrequency" />
 		</div>
 
-		<button type="submit" class="btn btn-primary">Sauvegarder les modifications</button>
+		<button type="submit" class="btn btn-primary">@Localizer[nameof(Dictionary.SaveModificationsString)]</button>
 
 	</EditForm>
 }
@@ -56,7 +59,7 @@ else
 
 		if (string.IsNullOrEmpty(car.Name))
 		{
-			customValidationError = "Le nom du modèle ne doit pas être vide";
+			customValidationError = @Localizer[nameof(Dictionary.CarNameEmptyString)];
 			return;
 		}
 
@@ -64,7 +67,7 @@ else
 		var carNameExists = await HttpClient.GetFromJsonAsync<bool>($"api/Car/exists/{encodedName}?excludeCarId={CarId}");
 		if (carNameExists)
 		{
-			customValidationError = "Un modèle de voiture existe déjà pour la même marque.";
+			customValidationError = @Localizer[nameof(Dictionary.ExistingCarNameForBrandString)];
 			return;
 		}
 

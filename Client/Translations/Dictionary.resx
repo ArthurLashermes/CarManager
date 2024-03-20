@@ -117,10 +117,136 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Counter" xml:space="preserve">
-    <value>Counter</value>
+  <data name="AddCarString" xml:space="preserve">
+    <value>Add a new car model</value>
   </data>
-  <data name="Recipes" xml:space="preserve">
-    <value>Recipes</value>
+  <data name="AddMaintenanceString" xml:space="preserve">
+    <value>Add a maintenance</value>
+  </data>
+  <data name="AddString" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="AddVehicleString" xml:space="preserve">
+    <value>Add a vehicle</value>
+  </data>
+  <data name="BackString" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="BrandString" xml:space="preserve">
+    <value>Brand:</value>
+  </data>
+  <data name="CancelString" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="CarNameEmptyString" xml:space="preserve">
+    <value>Car model name should not be empty</value>
+  </data>
+  <data name="CarNameNotEmptyString" xml:space="preserve">
+    <value>The car model name should at least be 1 character long</value>
+  </data>
+  <data name="CarNameString" xml:space="preserve">
+    <value>Car model name </value>
+  </data>
+  <data name="CarsString" xml:space="preserve">
+    <value>Cars model</value>
+  </data>
+  <data name="CarString" xml:space="preserve">
+    <value>Carmodel:</value>
+  </data>
+  <data name="ConfirmString" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="DeleteErrorCar" xml:space="preserve">
+    <value>Error while deleting the car model</value>
+  </data>
+  <data name="DescriptionEmptyString" xml:space="preserve">
+    <value>The maintenance description should at least be 1 character long</value>
+  </data>
+  <data name="DescriptionString" xml:space="preserve">
+    <value>Description:</value>
+  </data>
+  <data name="EnergyString" xml:space="preserve">
+    <value>Energy</value>
+  </data>
+  <data name="ExistingCarNameForBrandString" xml:space="preserve">
+    <value>A Car model already exist for this brand</value>
+  </data>
+  <data name="ExistingRegisterString" xml:space="preserve">
+    <value>A vehicle for this registration number already exists</value>
+  </data>
+  <data name="FrequencyMaintenanceString" xml:space="preserve">
+    <value>Frequency maintenance:</value>
+  </data>
+  <data name="HomeString" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="LoadErrorVehicles" xml:space="preserve">
+    <value>Error while loading vehicles</value>
+  </data>
+  <data name="LoadingString" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="MaintenanceFrequencyString" xml:space="preserve">
+    <value>Maintenance frequency</value>
+  </data>
+  <data name="MileagePositiveString" xml:space="preserve">
+    <value>Mileage should be a positive</value>
+  </data>
+  <data name="MileageString" xml:space="preserve">
+    <value>Mileage:</value>
+  </data>
+  <data name="NameString" xml:space="preserve">
+    <value>Name: </value>
+  </data>
+  <data name="NegativeFrequencyMaintenanceString" xml:space="preserve">
+    <value>The frequency maintenance cannot be negative</value>
+  </data>
+  <data name="NoCarDisplayString" xml:space="preserve">
+    <value>No cars models to display</value>
+  </data>
+  <data name="NoVehicleLateForMaintenanceString" xml:space="preserve">
+    <value>No Vehicles late for maintenances</value>
+  </data>
+  <data name="NoVehiclesDisplayString" xml:space="preserve">
+    <value>No vehicles to display</value>
+  </data>
+  <data name="PositiveMileageString" xml:space="preserve">
+    <value>Mileage should be positive</value>
+  </data>
+  <data name="RegisterNumberString" xml:space="preserve">
+    <value>Registration number:</value>
+  </data>
+  <data name="RegistrationNumberFormatString" xml:space="preserve">
+    <value>The registration number shoud be between 7 and 9 characters long</value>
+  </data>
+  <data name="SaveModificationsString" xml:space="preserve">
+    <value>Save changes</value>
+  </data>
+  <data name="SelectBrandString" xml:space="preserve">
+    <value>Select a brand</value>
+  </data>
+  <data name="SelectCarString" xml:space="preserve">
+    <value>Select a car model</value>
+  </data>
+  <data name="ShouldSelectBrandString" xml:space="preserve">
+    <value>You have to select a brand</value>
+  </data>
+  <data name="ShouldSelectCarString" xml:space="preserve">
+    <value>You have to select a car</value>
+  </data>
+  <data name="VehicleLateForMaintenanceString" xml:space="preserve">
+    <value>Vehicles late for maintenances</value>
+  </data>
+  <data name="VehiclesString" xml:space="preserve">
+    <value>Vehicles</value>
+  </data>
+  <data name="VehicleString" xml:space="preserve">
+    <value>Vehicle</value>
+  </data>
+  <data name="VehicleYearString" xml:space="preserve">
+    <value>The year of the vehicle should be between 1900 and</value>
+  </data>
+  <data name="YearString" xml:space="preserve">
+    <value>Year:</value>
   </data>
 </root>
