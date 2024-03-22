@@ -103,8 +103,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		vehicle = await HttpClient.GetFromJsonAsync<VehicleModelDeserialize>($"api/Vehicle/{VehicleId}");
-		newMaintenance.MileageAtMaintenance = vehicle.Mileage;
+		await LoadVehicleDetails();
 		originalRegistrationNumber = vehicle.RegistrationNumber;
 	}
 
@@ -167,6 +166,7 @@
 	private async Task LoadVehicleDetails()
 	{
 		vehicle = await HttpClient.GetFromJsonAsync<VehicleModelDeserialize>($"api/Vehicle/{VehicleId}");
+		newMaintenance.MileageAtMaintenance = vehicle.Mileage;
 	}
 }
 

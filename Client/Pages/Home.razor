@@ -26,22 +26,25 @@ else
 				<th>@Localizer[nameof(Dictionary.BrandString)]</th>
 				<th>@Localizer[nameof(Dictionary.CarString)]</th>
 				<th>@Localizer[nameof(Dictionary.RegisterNumberString)]</th>
-				<th>Retard (jours)</th>
+				<th>Retard</th>
 				<th></th>
 			</tr>
 		</thead>
 		<tbody>
 			@foreach (var vehicle in vehiclesInDelay)
 			{
-				<tr @ondblclick="() => NavigateToVehicleDetail(vehicle.Id)">
-					<td>@vehicle.Car.Brand.Name</td>
-					<td>@vehicle.Car.Name</td>
-					<td>@vehicle.RegistrationNumber</td>
-					<td>@vehicle.MaintenanceDelay</td>
-					<td>
-						<button class="btn btn-info" @onclick="() => NavigateToVehicleDetail(vehicle.Id)">🔍</button>
-					</td>
-				</tr>
+				if (vehicle.MaintenanceDelay < 0)
+				{
+					<tr @ondblclick="() => NavigateToVehicleDetail(vehicle.Id)">
+						<td>@vehicle.Car.Brand.Name</td>
+						<td>@vehicle.Car.Name</td>
+						<td>@vehicle.RegistrationNumber</td>
+						<td>@vehicle.MaintenanceDelay</td>
+						<td>
+							<button class="btn btn-info" @onclick="() => NavigateToVehicleDetail(vehicle.Id)">🔍</button>
+						</td>
+					</tr>
+				}
 			}
 		</tbody>
 	</table>

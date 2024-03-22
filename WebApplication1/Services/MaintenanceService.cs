@@ -49,7 +49,7 @@ namespace Server.Services
             if (lastMaintenance != null)
             {
                 var calculatedDelay = CalculateMaintenanceDelay(lastMaintenance);
-                maintenanceDelay = calculatedDelay < 0 ? calculatedDelay : 0; // Garde uniquement les valeurs négatives
+                maintenanceDelay = calculatedDelay < 0 ? calculatedDelay : 0;
             }
 
             return maintenanceDelay;
