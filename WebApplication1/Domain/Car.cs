@@ -11,7 +11,7 @@
 			set
 			{
 				if (string.IsNullOrWhiteSpace(value))
-					throw new ArgumentException("Le nom du modèle doit avoir au moins 1 charactère.");
+					throw new ArgumentException("Le nom du modèle doit avoir au moins 1 caractère.");
 				_name = value;
 			}
 		}

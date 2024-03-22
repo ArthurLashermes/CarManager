@@ -1,3 +1,0 @@
- for updating db : dotnet ef database update --project .\WebApplication1\Server.csproj
-
-Add-Migration DatabaseCreation
