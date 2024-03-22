@@ -1,10 +1,7 @@
 ﻿using Server.Domain;
-
-namespace TestProject;
-
-using System;
 using Assert = NUnit.Framework.Assert;
 
+namespace TestProject;
 
 [TestClass]
 public class CarTest

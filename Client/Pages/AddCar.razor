@@ -1,0 +1,96 @@
+﻿@page "/car/add"
+@using Client.Translations
+@using Microsoft.Extensions.Localization
+@using Shared.DeserializeModels
+@using Shared.SerializeModels
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<Dictionary> Localizer
+
+<BackButton />
+
+<h3>@Localizer[nameof(Dictionary.AddCarString)]</h3>
+
+<EditForm Model="@car" OnValidSubmit="HandleValidSubmit">
+	<DataAnnotationsValidator />
+	<ValidationSummary />
+
+	@if (!string.IsNullOrEmpty(customValidationError))
+	{
+		<div class="alert alert-danger">@customValidationError</div>
+	}
+
+	<div class="form-group">
+		<label for="brandId">Marque:</label>
+		<InputSelect id="brandId" class="form-control" @bind-Value="selectedBrandId">
+			<option value="">@Localizer[nameof(Dictionary.SelectBrandString)]</option>
+			@foreach (var brand in brands)
+			{
+				<option value="@brand.Id">@brand.Name</option>
+			}
+		</InputSelect>
+	</div>
+
+	<div class="form-group">
+		<label for="name">@Localizer[nameof(Dictionary.NameString)]</label>
+		<InputText id="name" class="form-control" @bind-Value="car.Name" />
+	</div>
+
+	<div class="form-group">
+		<label for="maintenanceFrequency">@Localizer[nameof(Dictionary.MaintenanceFrequencyString)]:</label>
+		<InputNumber id="maintenanceFrequency" class="form-control" @bind-Value="car.MaintenanceFrequency" />
+	</div>
+
+	<button type="submit" class="btn btn-primary">@Localizer[nameof(Dictionary.AddString)]</button>
+</EditForm>
+
+@code {
+	private int selectedBrandId;
+	private CarModelSerialize car = new CarModelSerialize();
+	private List<BrandModelDeserialize> brands = new List<BrandModelDeserialize>();
+	private List<CarModelDeserialize> cars = new List<CarModelDeserialize>();
+	private bool nameExists = false;
+	private string customValidationError;
+
+	protected override async Task OnInitializedAsync()
+	{
+		brands = await HttpClient.GetFromJsonAsync<List<BrandModelDeserialize>>("api/Brand");
+	}
+
+	private async Task HandleValidSubmit()
+	{
+		customValidationError = string.Empty;
+		if (selectedBrandId == 0)
+		{
+			customValidationError = @Localizer[nameof(Dictionary.ShouldSelectBrandString)];
+			return;
+		}
+
+		if (string.IsNullOrEmpty(car.Name))
+		{
+			customValidationError = @Localizer[nameof(Dictionary.ShouldSelectCarString)];
+			return;
+		}
+
+		var encodedName = Uri.EscapeDataString(car.Name);
+		var carNameExists = await HttpClient.GetFromJsonAsync<bool>($"api/Car/exists/{encodedName}");
+
+		if (carNameExists)
+		{
+			customValidationError = @Localizer[nameof(Dictionary.ExistingCarNameForBrandString)];
+			return;
+		}
+
+		car.BrandId = selectedBrandId;
+
+		var response = await HttpClient.PostAsJsonAsync("api/Car", car);
+		if (response.IsSuccessStatusCode)
+		{
+			NavigationManager.NavigateTo("/cars");
+		}
+		else
+		{
+			customValidationError = await response.Content.ReadAsStringAsync();
+		}
+	}
+}

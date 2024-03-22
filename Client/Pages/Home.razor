@@ -1,7 +1,66 @@
 ﻿@page "/"
+@using Client.Translations
+@using Microsoft.Extensions.Localization
+@using Shared.DeserializeModels
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<Dictionary> Localizer
 
-<PageTitle>Home</PageTitle>
+<BackButton />
 
-<h1>Hello, world!</h1>
+<h3>@Localizer[nameof(Dictionary.VehicleLateForMaintenanceString)]</h3>
 
-Welcome to your new app.
+@if (vehiclesInDelay == null)
+{
+	<p><em>@Localizer[nameof(Dictionary.LoadingString)]</em></p>
+}
+else if (vehiclesInDelay.Count == 0)
+{
+	<p>@Localizer[nameof(Dictionary.NoVehicleLateForMaintenanceString)]</p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>@Localizer[nameof(Dictionary.BrandString)]</th>
+				<th>@Localizer[nameof(Dictionary.CarString)]</th>
+				<th>@Localizer[nameof(Dictionary.RegisterNumberString)]</th>
+				<th>Retard</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var vehicle in vehiclesInDelay)
+			{
+				if (vehicle.MaintenanceDelay < 0)
+				{
+					<tr @ondblclick="() => NavigateToVehicleDetail(vehicle.Id)">
+						<td>@vehicle.Car.Brand.Name</td>
+						<td>@vehicle.Car.Name</td>
+						<td>@vehicle.RegistrationNumber</td>
+						<td>@vehicle.MaintenanceDelay</td>
+						<td>
+							<button class="btn btn-info" @onclick="() => NavigateToVehicleDetail(vehicle.Id)">🔍</button>
+						</td>
+					</tr>
+				}
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+
+	private List<VehicleModelDeserialize> vehiclesInDelay = new List<VehicleModelDeserialize>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		vehiclesInDelay = await HttpClient.GetFromJsonAsync<List<VehicleModelDeserialize>>("api/Vehicle");
+	}
+
+	private void NavigateToVehicleDetail(int vehicleId)
+	{
+		NavigationManager.NavigateTo($"/VehicleDetail/{vehicleId}");
+	}
+}

@@ -1,10 +1,13 @@
-﻿namespace Server.Domain
+﻿using Shared.Enum;
+
+namespace Server.Domain
 {
 	public class Vehicle : IDomain
     {
 		public int Id { get; set; }
 
 		private string _registrationNumber;
+		
 		public string RegistrationNumber
 		{
 			get => _registrationNumber;
@@ -15,7 +18,21 @@
 				_registrationNumber = value;
 			}
 		}
-		public int Year { get; set; }
+
+		private int _year;
+		public int Year
+		{
+			get => _year;
+			set
+			{
+				if(value < 1900 || value > DateTime.Now.Year)
+				{
+					throw new ArgumentException($"L'année du véhicule doit être comprise entre 1900 et {DateTime.Now.Year}");
+				}
+
+				_year = value;
+			}
+		}
 
 		private int _mileage;
 		public int Mileage
@@ -28,7 +45,7 @@
 				_mileage = value;
 			}
 		}
-		public string EnergyType { get; set; }
+		public EnergyTypeEnum EnergyType { get; set; }
 		public int CarId { get; set; }
 		public Car Car { get; set; }
 		public virtual ICollection<Maintenance> Maintenances { get; set; }

@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Server.Factory;
+using Server.Middleware;
 using Server.Services;
-using System.Text.Json.Serialization;
 using WebApplication1;
 using Path = System.IO.Path;
 
@@ -34,6 +34,8 @@ builder.Services.AddScoped<MaintenanceFactory>();
 builder.Services.AddScoped<MaintenanceService>();
 
 var app = builder.Build();
+
+app.UseErrorHandlingMiddleware();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

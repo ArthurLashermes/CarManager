@@ -1,9 +1,7 @@
 ﻿using Server.Domain;
+using Assert = NUnit.Framework.Assert;
 
 namespace TestProject;
-
-using System;
-using Assert = NUnit.Framework.Assert;
 
 
 [TestClass]

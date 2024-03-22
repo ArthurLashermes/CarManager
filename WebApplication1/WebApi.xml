@@ -4,6 +4,13 @@
         <name>Server</name>
     </assembly>
     <members>
+        <member name="M:Server.Controllers.CarController.GetCarsByBrand(System.Int32)">
+            <summary>
+            Retourne les Cars selon un BrandId
+            </summary>
+            <param name="brandId"></param>
+            <returns></returns>
+        </member>
         <member name="T:Server.Migrations.DatabaseCreation">
             <inheritdoc />
         </member>

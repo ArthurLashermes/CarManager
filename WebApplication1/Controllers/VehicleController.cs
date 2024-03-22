@@ -23,7 +23,6 @@ namespace Server.Controllers
             _factory = vehicleFactory;
         }
 
-
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<VehicleModelDeserialize>>> GetVehicles()
 		{
@@ -42,8 +41,6 @@ namespace Server.Controllers
 
             return Ok(deserializeVehicles);
 		}
-
-
 
         [HttpGet("{id}")]
         public async Task<ActionResult<VehicleModelDeserialize>> GetVehicle(int id)
@@ -65,7 +62,7 @@ namespace Server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditVehicle([FromBody] Shared.SerializeModels.VehicleModelSerialize vehicleToEdit, int id)
+        public async Task<IActionResult> EditVehicle(int id, [FromBody] VehicleModelSerialize vehicleToEdit)
         {
             var vehicleRepository = _context.Set<Vehicle>();
 
@@ -90,6 +87,11 @@ namespace Server.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateVehicle([FromBody] VehicleModelSerialize vehicleToCreate)
         {
+            _logger.LogInformation($"PASSAGE METHODE ADD VEHICLE");
+
+            _logger.LogInformation($"Ajout du vehicule :{vehicleToCreate}");
+
+
             var newVehicle = (Vehicle)_factory.SerializeModelToDomain(vehicleToCreate, new Vehicle());
 
             var vehicleRepository = _context.Set<Vehicle>();
@@ -114,6 +116,17 @@ namespace Server.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpGet("exists/{registrationNumber}")]
+        public async Task<ActionResult<bool>> RegistrationNumberExists(string registrationNumber, int? excludeVehicleId = null)
+        {
+            var vehicleExists = await _context.Vehicles
+                .Where(v => v.RegistrationNumber == registrationNumber)
+                .Where(v => !excludeVehicleId.HasValue || v.Id != excludeVehicleId.Value)
+                .AnyAsync();
+
+            return vehicleExists;
         }
     }
 }

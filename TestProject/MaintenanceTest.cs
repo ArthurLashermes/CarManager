@@ -1,24 +1,10 @@
-﻿using Server.Domain;
-using Server.Services;
-
-namespace TestProject;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
 using Moq;
-using NUnit.Framework;
-using Server.Controllers;
-using Server.Factory;
+using Server.Domain;
 using TestProject.Mock;
-using WebApplication1;
 using Assert = NUnit.Framework.Assert;
 
+namespace TestProject;
 
 [TestClass]
 public class MaintenanceTest

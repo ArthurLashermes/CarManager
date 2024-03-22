@@ -1,0 +1,142 @@
+﻿@page "/vehicle/add"
+@using Client.Translations
+@using Microsoft.Extensions.Localization
+@using Shared.DeserializeModels
+@using Shared.Enum
+@using Shared.SerializeModels
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<Dictionary> Localizer
+
+<BackButton />
+
+<h3>@Localizer[nameof(Dictionary.AddVehicleString)]</h3>
+
+@if (!string.IsNullOrEmpty(customValidationError))
+{
+    <div class="alert alert-danger">@customValidationError</div>
+}
+
+<EditForm Model="@vehicle" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="brandId">Marque:</label>
+        <InputSelect id="brandId" class="form-control" @bind-Value="SelectedBrandId">
+            <option value="">@Localizer[nameof(Dictionary.SelectBrandString)]</option>
+            @foreach (var brand in brands)
+            {
+                <option value="@brand.Id">@brand.Name</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="form-group">
+        <label for="carId">Modèle:</label>
+        <InputSelect id="carId" class="form-control" @bind-Value="selectedCarId">
+            <option value="">@Localizer[nameof(Dictionary.SelectCarString)]</option>
+            @foreach (var car in cars)
+            {
+                <option value="@car.Id">@car.Name</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="form-group">
+        <label for="registrationNumber">@Localizer[nameof(Dictionary.RegisterNumberString)]</label>
+        <InputText id="registrationNumber" class="form-control" @bind-Value="vehicle.RegistrationNumber" />
+    </div>
+
+    <div class="form-group">
+        <label for="EnergyType">@Localizer[nameof(Dictionary.EnergyString)]:</label>
+        <InputSelect id="energyType" class="form-control" @bind-Value="vehicle.EnergyType">
+            @foreach (var energy in Enum.GetValues<EnergyTypeEnum>())
+            {
+                <option value="@energy">@energy</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="form-group">
+        <label for="Year">@Localizer[nameof(Dictionary.YearString)]</label>
+        <InputNumber id="year" class="form-control" @bind-Value="vehicle.Year" />
+    </div>
+
+    <div class="form-group">
+        <label for="Mileage">@Localizer[nameof(Dictionary.MileageString)]</label>
+        <InputNumber id="mileage" class="form-control" @bind-Value="vehicle.Mileage" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Ajouter</button>
+</EditForm>
+
+@code {
+
+    private int _selectedBrandId;
+    public int SelectedBrandId
+    {
+        get => _selectedBrandId;
+        set
+        {
+            if(_selectedBrandId != value)
+            {
+                _selectedBrandId = value;
+                _ = OnBrandChanged(value);
+            }
+        }
+    }
+    private int selectedCarId;
+
+    private List<BrandModelDeserialize> brands = new List<BrandModelDeserialize>();
+    private List<CarModelDeserialize> cars = new List<CarModelDeserialize>();
+    private VehicleModelSerialize vehicle = new VehicleModelSerialize();
+    private string customValidationError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        brands = await HttpClient.GetFromJsonAsync<List<BrandModelDeserialize>>("api/Brand");
+    }
+
+    private async Task OnBrandChanged(int value)
+    {
+        cars = await HttpClient.GetFromJsonAsync<List<CarModelDeserialize>>($"api/car/bybrand/{SelectedBrandId}");
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        customValidationError = string.Empty;
+
+        if (SelectedBrandId == 0)
+        {
+            customValidationError = @Localizer[nameof(Dictionary.ShouldSelectBrandString)];
+            return;
+        }
+
+        if (selectedCarId == 0)
+        {
+            customValidationError += @Localizer[nameof(Dictionary.ShouldSelectCarString)];
+            return;
+        }
+        
+        var registrationNumberExists = await HttpClient.GetFromJsonAsync<bool>($"api/Vehicle/exists/{vehicle.RegistrationNumber}");
+        if (registrationNumberExists)
+        {
+            customValidationError = @Localizer[nameof(Dictionary.ExistingRegisterString)];
+            return;
+        }
+
+        vehicle.CarId = selectedCarId;
+
+        var response = await HttpClient.PostAsJsonAsync("api/Vehicle", vehicle);
+        if (response.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo("/vehicles");
+        }
+        else
+        {
+            customValidationError = await response.Content.ReadAsStringAsync();
+        }
+    }
+}

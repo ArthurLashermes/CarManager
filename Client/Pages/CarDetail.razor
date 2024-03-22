@@ -1,0 +1,96 @@
+﻿@page "/CarDetail/{CarId:int}"
+@using Client.Translations
+@using Microsoft.Extensions.Localization
+@using Shared.DeserializeModels
+@using Shared.SerializeModels
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<Dictionary> Localizer
+
+<BackButton />
+
+<h3>Modifier Voiture</h3>
+
+@if (car is null)
+{
+	<p><em>@Localizer[nameof(Dictionary.LoadingString)]</em></p>
+}
+else
+{
+	@if (!string.IsNullOrEmpty(customValidationError))
+	{
+		<div class="alert alert-danger">@customValidationError</div>
+	}
+
+	<EditForm Model="@car" OnValidSubmit="HandleValidSubmit">
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+
+		<div class="form-group">
+			<label for="Nom">@Localizer[nameof(Dictionary.CarNameString)]</label>
+			<InputText id="name" class="form-control" @bind-Value="car.Name" />
+		</div>
+
+		<div class="form-group">
+			<label for="MileageMaintenance">@Localizer[nameof(Dictionary.FrequencyMaintenanceString)]</label>
+			<InputNumber id="mileageMaintenance" class="form-control" @bind-Value="car.MaintenanceFrequency" />
+		</div>
+
+		<button type="submit" class="btn btn-primary">@Localizer[nameof(Dictionary.SaveModificationsString)]</button>
+
+	</EditForm>
+}
+
+@code {
+	[Parameter]
+	public int CarId { get; set; }
+
+	private CarModelDeserialize car = new CarModelDeserialize();
+	private string customValidationError;
+
+	protected override async Task OnInitializedAsync()
+	{
+		car = await HttpClient.GetFromJsonAsync<CarModelDeserialize>($"api/Car/{CarId}");
+	}
+
+	private async Task HandleValidSubmit()
+	{
+		customValidationError = string.Empty;
+
+		if (string.IsNullOrEmpty(car.Name))
+		{
+			customValidationError = @Localizer[nameof(Dictionary.CarNameEmptyString)];
+			return;
+		}
+
+		var encodedName = Uri.EscapeDataString(car.Name);
+		var carNameExists = await HttpClient.GetFromJsonAsync<bool>($"api/Car/exists/{encodedName}?excludeCarId={CarId}");
+		if (carNameExists)
+		{
+			customValidationError = @Localizer[nameof(Dictionary.ExistingCarNameForBrandString)];
+			return;
+		}
+
+		var carEdited = ConvertToSerializeModel(car);
+		var response = await HttpClient.PutAsJsonAsync($"api/car/{CarId}", carEdited);
+
+		if (response.IsSuccessStatusCode)
+		{
+			NavigationManager.NavigateTo("/cars");
+		}
+		else
+		{
+			customValidationError = await response.Content.ReadAsStringAsync();
+		}
+	}
+
+	private CarModelSerialize ConvertToSerializeModel(CarModelDeserialize car)
+	{
+		return new CarModelSerialize
+			{
+				Name = car.Name,
+				MaintenanceFrequency = car.MaintenanceFrequency,
+				BrandId = car.Brand.Id
+			};
+	}
+}

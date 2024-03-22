@@ -1,0 +1,98 @@
+﻿@page "/cars"
+@using Client.Translations
+@using Microsoft.Extensions.Localization
+@using Shared.DeserializeModels
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<Dictionary> Localizer
+
+<BackButton />
+
+<div class="vehicles-header">
+    <h3>@Localizer[nameof(Dictionary.CarsString)]</h3>
+    <button class="btn btn-primary add-vehicle-btn" @onclick="NavigateToAddVehiclePage">+</button>
+</div>
+
+@if (cars.Count == 0)
+{
+    <p>@Localizer[nameof(Dictionary.NoCarDisplayString)]</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@Localizer[nameof(Dictionary.BrandString)]</th>
+                <th>@Localizer[nameof(Dictionary.CarString)]</th>
+                <th>@Localizer[nameof(Dictionary.FrequencyMaintenanceString)]</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var car in cars)
+            {
+                <tr>
+                    <td>@car.Brand.Name</td>
+                    <td>@car.Name</td>
+                    <td>@car.MaintenanceFrequency</td>
+                    <td>
+                        <button class="btn btn-info" @onclick="() => NavigateToCarDetail(car.Id)">🔍</button>
+                        <button class="btn btn-danger" @onclick="() => DeleteCar(car.Id)">❌</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<CarModelDeserialize> cars = new List<CarModelDeserialize>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            cars = await HttpClient.GetFromJsonAsync<List<CarModelDeserialize>>("api/Car");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Erreur lors du chargement des véhicules.");
+        }
+    }
+
+    private async Task DeleteCar(int carId)
+    {
+        var response = await HttpClient.DeleteAsync($"api/Car/{carId}");
+        if (response.IsSuccessStatusCode)
+        {
+            cars.RemoveAll(v => v.Id == carId);
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine("Erreur lors de la suppression du modèle.");
+        }
+    }
+
+    private void NavigateToAddVehiclePage()
+    {
+        NavigationManager.NavigateTo("/car/add");
+    }
+
+    private void NavigateToCarDetail(int carId)
+    {
+        NavigationManager.NavigateTo($"/CarDetail/{carId}");
+    }
+}
+
+<style>
+    .vehicles-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .add-vehicle-btn {
+        font-size: 24px;
+    }
+</style>

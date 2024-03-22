@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using Server.Domain;
-using System.Reflection.Metadata;
 using Server.Factory;
 using Shared.DeserializeModels;
 using Shared.SerializeModels;
@@ -109,5 +107,44 @@ namespace Server.Controllers
             return NoContent();
         }
 
-    }
+        /// <summary>
+        /// Retourne les Cars selon un BrandId
+        /// </summary>
+        /// <param name="brandId"></param>
+        /// <returns></returns>
+        [HttpGet("bybrand/{brandId}")]
+        public async Task<ActionResult<IEnumerable<CarModelDeserialize>>> GetCarsByBrand(int brandId)
+        {
+            _logger.LogInformation($"Recherche des voitures de la marque Id: {brandId}");
+            var carsByBrand = await _context.Cars
+                .Where(c => c.BrandId == brandId)
+                .Include(c => c.Brand)
+                .ToListAsync();
+
+            if(carsByBrand == null || !carsByBrand.Any())
+            {
+                return NotFound($"Aucune voiture trouvée pour la marque Id: {brandId}");
+            }
+
+            var deserializeCars = carsByBrand
+                .Select(car => _factory.DomainToDeserializeModel(car))
+                .Cast<CarModelDeserialize>()
+                .ToList();
+
+            return Ok(deserializeCars);
+
+        }
+
+        [HttpGet("exists/{name}")]
+        public async Task<ActionResult<bool>> CarNameExists(string name, int? excludeCarId = null)
+        {
+            var carExists = await _context.Cars
+                .Where(c => c.Name == name)
+                .Where(c => !excludeCarId.HasValue || c.Id != excludeCarId.Value)
+                .AnyAsync();
+
+            return carExists;
+        }
+
+	}
 }

@@ -1,12 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Server.Domain;
+﻿using Server.Domain;
 using Shared.DeserializeModels;
 using Shared.SerializeModels;
-using WebApplication1;
 
 namespace Server.Factory
 {
-    public class CarFactory : IFactory
+	public class CarFactory : IFactory
     {
         private readonly BrandFactory _brandFactory;
 

@@ -117,10 +117,136 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Counter" xml:space="preserve">
-    <value>Compteur</value>
+  <data name="AddCarString" xml:space="preserve">
+    <value>Ajouter un nouveau modèle de voiture</value>
   </data>
-  <data name="Recipes" xml:space="preserve">
-    <value>Recettes</value>
+  <data name="AddMaintenanceString" xml:space="preserve">
+    <value>Ajouter un entretien</value>
+  </data>
+  <data name="AddString" xml:space="preserve">
+    <value>Ajouter</value>
+  </data>
+  <data name="AddVehicleString" xml:space="preserve">
+    <value>Ajouter un Véhicule</value>
+  </data>
+  <data name="BackString" xml:space="preserve">
+    <value>Retour</value>
+  </data>
+  <data name="BrandString" xml:space="preserve">
+    <value>Marque:</value>
+  </data>
+  <data name="CancelString" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="CarNameEmptyString" xml:space="preserve">
+    <value>Le nom du modèle ne doit pas être vide</value>
+  </data>
+  <data name="CarNameNotEmptyString" xml:space="preserve">
+    <value>Le nom du modèle doit avoir au moins 1 caractère</value>
+  </data>
+  <data name="CarNameString" xml:space="preserve">
+    <value>Nom du modèle:</value>
+  </data>
+  <data name="CarsString" xml:space="preserve">
+    <value>Modèles</value>
+  </data>
+  <data name="CarString" xml:space="preserve">
+    <value>Modèle:</value>
+  </data>
+  <data name="ConfirmString" xml:space="preserve">
+    <value>Valider</value>
+  </data>
+  <data name="DeleteErrorCar" xml:space="preserve">
+    <value>Erreur lors de la suppression du modèle</value>
+  </data>
+  <data name="DescriptionEmptyString" xml:space="preserve">
+    <value>La description des travaux effectués doit avoir au moins 1 caractère</value>
+  </data>
+  <data name="DescriptionString" xml:space="preserve">
+    <value>Description:</value>
+  </data>
+  <data name="EnergyString" xml:space="preserve">
+    <value>Énergie:</value>
+  </data>
+  <data name="ExistingCarNameForBrandString" xml:space="preserve">
+    <value>Un modèle de voiture existe déjà pour la même marque</value>
+  </data>
+  <data name="ExistingRegisterString" xml:space="preserve">
+    <value>Un véhicule avec cette plaque d'immatriculation existe déjà.</value>
+  </data>
+  <data name="FrequencyMaintenanceString" xml:space="preserve">
+    <value>Fréquence d'entretien:</value>
+  </data>
+  <data name="HomeString" xml:space="preserve">
+    <value>Accueil</value>
+  </data>
+  <data name="LoadErrorVehicles" xml:space="preserve">
+    <value>Erreur lors du chargement des véhicules </value>
+  </data>
+  <data name="LoadingString" xml:space="preserve">
+    <value>Chargement...</value>
+  </data>
+  <data name="MaintenanceFrequencyString" xml:space="preserve">
+    <value>Fréquence de maintenance</value>
+  </data>
+  <data name="MileagePositiveString" xml:space="preserve">
+    <value>Le nombre de KM doit être positif</value>
+  </data>
+  <data name="MileageString" xml:space="preserve">
+    <value>Kilométrage:</value>
+  </data>
+  <data name="NameString" xml:space="preserve">
+    <value>Nom:</value>
+  </data>
+  <data name="NegativeFrequencyMaintenanceString" xml:space="preserve">
+    <value>La fréquence d'entretien ne peut pas être négative</value>
+  </data>
+  <data name="NoCarDisplayString" xml:space="preserve">
+    <value>Aucun modèle à afficher</value>
+  </data>
+  <data name="NoVehicleLateForMaintenanceString" xml:space="preserve">
+    <value>Aucun véhicule en retard d'entretien</value>
+  </data>
+  <data name="NoVehiclesDisplayString" xml:space="preserve">
+    <value>Aucun véhicule à afficher</value>
+  </data>
+  <data name="PositiveMileageString" xml:space="preserve">
+    <value>Le nombre de KM doit être positif</value>
+  </data>
+  <data name="RegisterNumberString" xml:space="preserve">
+    <value>Immatriculation:</value>
+  </data>
+  <data name="RegistrationNumberFormatString" xml:space="preserve">
+    <value>Le format de l’immatriculation doit être entre 7 et 9 caractères</value>
+  </data>
+  <data name="SaveModificationsString" xml:space="preserve">
+    <value>Sauvegarder les modifications</value>
+  </data>
+  <data name="SelectBrandString" xml:space="preserve">
+    <value>Sélectionnez une marque</value>
+  </data>
+  <data name="SelectCarString" xml:space="preserve">
+    <value>Sélectionnez un modèle</value>
+  </data>
+  <data name="ShouldSelectBrandString" xml:space="preserve">
+    <value>Vous devez sélectionnez une marque</value>
+  </data>
+  <data name="ShouldSelectCarString" xml:space="preserve">
+    <value>Vous devez séléctionnez un modèle</value>
+  </data>
+  <data name="VehicleLateForMaintenanceString" xml:space="preserve">
+    <value>Véhicules en retard d'entretien</value>
+  </data>
+  <data name="VehiclesString" xml:space="preserve">
+    <value>Véhicules</value>
+  </data>
+  <data name="VehicleString" xml:space="preserve">
+    <value>Véhicule</value>
+  </data>
+  <data name="VehicleYearString" xml:space="preserve">
+    <value>L'année du véhicule doit être comprise entre 1900 et</value>
+  </data>
+  <data name="YearString" xml:space="preserve">
+    <value>Année:</value>
   </data>
 </root>

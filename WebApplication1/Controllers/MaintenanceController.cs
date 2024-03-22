@@ -17,7 +17,6 @@ namespace Server.Controllers
         private readonly MaintenanceFactory _factory;
         private readonly MaintenanceService _maintenanceService;
 
-
         public MaintenanceController(ApplicationDbContext context, ILogger<MaintenanceController> logger, MaintenanceFactory maintenanceFactory, MaintenanceService maintenanceService)
         {
 			_context = context;

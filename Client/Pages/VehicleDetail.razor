@@ -1,0 +1,219 @@
+﻿@page "/VehicleDetail/{VehicleId:int}"
+@using Client.Translations
+@using Microsoft.Extensions.Localization
+@using Shared.DeserializeModels
+@using Shared.Enum
+@using Shared.SerializeModels
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<Dictionary> Localizer
+
+<BackButton />
+
+<div class="vehicle-details-container">
+	<div class="vehicle-title">
+		<h3>@Localizer[nameof(Dictionary.VehicleString)] @vehicle?.RegistrationNumber</h3>
+	</div>
+
+	@if (ShowAddMaintenancePopup)
+	{
+		<div class="add-maintenance-popup">
+			<div class="popup-content">
+				<h4>@Localizer[nameof(Dictionary.AddMaintenanceString)]</h4>
+
+				<div class="form-group">
+					<label>@Localizer[nameof(Dictionary.MileageString)]</label>
+					<span class="form-control-plaintext">@newMaintenance.MileageAtMaintenance</span>
+				</div>
+
+				<div class="form-group">
+					<label>@Localizer[nameof(Dictionary.DescriptionString)]</label>
+					<InputTextArea class="form-control" @bind-Value="newMaintenance.WorkDone" />
+				</div>
+
+				<button class="btn btn-success" @onclick="AddMaintenance">@Localizer[nameof(Dictionary.AddString)]</button>
+				<button class="btn btn-secondary" @onclick="() => ShowAddMaintenancePopup = false">@Localizer[nameof(Dictionary.CancelString)]</button>
+			</div>
+		</div>
+	}
+
+	<div class="vehicle-info">
+		@if (!string.IsNullOrEmpty(customValidationError))
+		{
+			<div class="alert alert-danger">@customValidationError</div>
+		}
+		<div class="form-group">
+			<label>@Localizer[nameof(Dictionary.YearString)]</label>
+			<InputNumber class="form-control" @bind-Value="vehicle.Year" />
+		</div>
+		<div class="form-group">
+			<label>@Localizer[nameof(Dictionary.RegisterNumberString)]</label>
+			<InputText class="form-control" @bind-Value="vehicle.RegistrationNumber" />
+		</div>
+		<div class="form-group">
+			<label for="EnergyType">@Localizer[nameof(Dictionary.EnergyString)]</label>
+			<InputSelect id="energyType" class="form-control" @bind-Value="vehicle.EnergyType">
+				@foreach (var energy in Enum.GetValues<EnergyTypeEnum>())
+				{
+					<option value="@energy">@energy</option>
+				}
+			</InputSelect>
+		</div>
+		<div class="form-group">
+			<label>@Localizer[nameof(Dictionary.MileageString)]</label>
+			<InputNumber class="form-control" @bind-Value="vehicle.Mileage" />
+		</div>
+		<button class="btn btn-success" @onclick="UpdateVehicle">Valider</button>
+	</div>
+
+	<div class="maintenances-title">
+		<h3>Entretiens</h3>
+		<button class="btn btn-primary" @onclick="() => ShowAddMaintenancePopup = true">+</button>
+	</div>
+
+	<div class="maintenances-info">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Km</th>
+					<th>@Localizer[nameof(Dictionary.DescriptionString)]</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var maintenance in vehicle.Maintenances ?? new List<MaintenanceModelDeserialize>())
+				{
+					<tr>
+						<td>@maintenance.MileageAtMaintenance</td>
+						<td>@maintenance.WorkDone</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public int VehicleId { get; set; }
+	private VehicleModelDeserialize vehicle = new VehicleModelDeserialize();
+	private string customValidationError;
+	private bool ShowAddMaintenancePopup = false;
+	private MaintenanceModelSerialize newMaintenance = new MaintenanceModelSerialize();
+	private string originalRegistrationNumber;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadVehicleDetails();
+		originalRegistrationNumber = vehicle.RegistrationNumber;
+	}
+
+	private async Task UpdateVehicle()
+	{
+		customValidationError = string.Empty;
+		if (originalRegistrationNumber != vehicle.RegistrationNumber)
+		{
+			var registrationNumberExists = await HttpClient.GetFromJsonAsync<bool>($"api/Vehicle/exists/{vehicle.RegistrationNumber}?excludeVehicleId={VehicleId}");
+			if (registrationNumberExists)
+			{
+				customValidationError = @Localizer[nameof(Dictionary.ExistingRegisterString)];
+				return;
+			}
+		}
+
+		var vehicleEdited = ConvertToSerializeModel(vehicle);
+		var response = await HttpClient.PutAsJsonAsync($"api/Vehicle/{vehicle.Id}", vehicleEdited);
+		if (response.IsSuccessStatusCode)
+		{
+			NavigationManager.NavigateTo("/vehicles");
+		}
+		else
+		{
+			customValidationError = await response.Content.ReadAsStringAsync();
+		}
+	}
+
+	private VehicleModelSerialize ConvertToSerializeModel(VehicleModelDeserialize vehicleDeserialize)
+	{
+		return new VehicleModelSerialize
+			{
+				RegistrationNumber = vehicleDeserialize.RegistrationNumber,
+				Year = vehicleDeserialize.Year,
+				Mileage = vehicleDeserialize.Mileage,
+				EnergyType = vehicleDeserialize.EnergyType,
+				CarId = vehicleDeserialize.Car.Id,
+			};
+	}
+
+	private async void AddMaintenance()
+	{
+		newMaintenance.VehicleId = vehicle.Id;
+
+		var response = await HttpClient.PostAsJsonAsync("api/Maintenance", newMaintenance);
+
+		if (response.IsSuccessStatusCode)
+		{
+			ShowAddMaintenancePopup = false;
+			newMaintenance = new MaintenanceModelSerialize();
+			await LoadVehicleDetails();
+			await InvokeAsync(StateHasChanged);
+		}
+		else
+		{
+			customValidationError = await response.Content.ReadAsStringAsync();
+		}
+	}
+
+	private async Task LoadVehicleDetails()
+	{
+		vehicle = await HttpClient.GetFromJsonAsync<VehicleModelDeserialize>($"api/Vehicle/{VehicleId}");
+		newMaintenance.MileageAtMaintenance = vehicle.Mileage;
+	}
+}
+
+<style>
+	.vehicle-details-container {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.vehicle-title, .maintenances-title {
+		text-align: left;
+	}
+
+	.maintenances-title {
+		text-align: center;
+		margin-top: 20px;
+	}
+
+	.vehicle-info {
+		margin-top: 10px;
+	}
+
+	textarea {
+		width: 100%;
+		height: 100px;
+		margin-bottom: 20px;
+	}
+
+	.maintenances-info {
+		margin-top: 20px;
+	}
+
+	.add-maintenance-popup {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.5);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.popup-content {
+		background-color: white;
+		padding: 20px;
+		border-radius: 5px;
+	}
+</style>

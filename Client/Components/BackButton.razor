@@ -1,0 +1,14 @@
+﻿@using Client.Translations
+@using Microsoft.Extensions.Localization
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject IStringLocalizer<Dictionary> Localizer
+
+<button class="btn btn-secondary" @onclick="GoBack">@Localizer[nameof(Dictionary.BackString)]</button>
+
+@code {
+    private async Task GoBack()
+    {
+        await JSRuntime.InvokeVoidAsync("history.back");
+    }
+}
